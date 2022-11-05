@@ -7,6 +7,17 @@
 #include <dirent.h>
 
 FLAG_SIZE = 0;
+
+char* hereorbefore(char* mot,int index){
+    char* copy=strdup(mot);
+    copy[index]='\0';
+    return copy;
+}
+char* hereorafter(char* mot,int index){
+    return mot + index;
+}
+
+
 //q3
 int taille (char *nom)
 {
@@ -26,7 +37,8 @@ int taille (char *nom)
 bool comparaison (char *nom, char *fichier){
     char signe = nom[0];
     char unité = nom[-1];
-    char *tamp;
+    char* tamp = malloc(sizeof(nom));
+    tamp = hereorafter(hereorbefore(nom,-1),1);
     //for (size_t i = 1; i < strlen(nom)-1; i++)
     //{
        // tamp[i-1] = nom[i];
@@ -36,53 +48,63 @@ bool comparaison (char *nom, char *fichier){
     if (signe == "+"){
         if (unité == "c"){
             if (target < taille(fichier)){
+                free(tamp);
                 return true;
             }
         }
         if (unité == "k"){
             target = target * 1024;
             if (target < taille(fichier)){
+                free(tamp);
                 return true;
             }
         }
         if (unité == "M"){
             target = target * 1024 * 1024;
             if (target < taille(fichier)){
+                free(tamp);
                 return true;
             }
         }
         if (unité == "G"){
             target = target * 1024 * 1024 * 1024;
             if (target < taille(fichier)){
+                free(tamp);
                 return true;
             }
         }
+        free(tamp);
         return false;
     }
     if (signe == "-"){
         if (unité == "c"){
             if (target > taille(fichier)){
+                free(tamp);
                 return true;
             }
         }
         if (unité == "k"){
             target = target * 1024;
             if (target > taille(fichier)){
+                free(tamp);
                 return true;
             }
         }
         if (unité == "M"){
             target = target * 1024 * 1024;
             if (target > taille(fichier)){
+                free(tamp);
                 return true;
             }
         }
         if (unité == "G"){
             target = target * 1024 * 1024 * 1024;
             if (target > taille(fichier)){
+                free(tamp);
                 return true;
             }
         }
+        free(tamp);
         return false;
     }
 }
@@ -114,8 +136,8 @@ void listdir(const char *name, int indent,char *val)
                 {
                     printf("%*s- %s\n", indent, "", dp->d_name); //on affiche le nom du fichier
                 }
-            printf("%*s- %s\n", indent, "", dp->d_name); //on affiche le nom du fichier
-            taille(dp->d_name);
+            //printf("%*s- %s\n", indent, "", dp->d_name); //on affiche le nom du fichier
+            //taille(dp->d_name);
             }
         }
     closedir(dirp); //on ferme le répertoire
