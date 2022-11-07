@@ -38,35 +38,21 @@ int taille(char *nom)
 
 bool comparaison(char *nom, char *fichier)
 {
-    //printf("nom : %s\n",nom);
+    
     char signe = nom[0];
     char unité = nom[strlen(nom)-1];
-    //printf("signe : %c\n",signe);
-    //printf("unité : %c\n",unité);
+    
     char *tamp;
     tamp =strdup(nom);
     tamp=tamp+1;
-    //printf("1. %s\n",tamp);
+    
     tamp[strlen(nom)-2]='\0';
-    //printf("2. %s\n",tamp);
-    
-    //printf("%s\n",signe);
-    //printf("%s\n",unité);
-
-
-
-    
-    // for (size_t i = 1; i < strlen(nom)-1; i++)
-    //{
-    //  tamp[i-1] = nom[i];
-    //}
 
     int target = atoi(tamp);
     if (signe == '+')
     {
         if (unité == 'c')
         {
-            //printf("Signe et Unité trouvées");
             if (target < taille(fichier))
             {
                 free(tamp-1);
@@ -171,15 +157,12 @@ void listdir(const char *name, int indent, char *valsize, char *valname)
         {
             if (FLAG_SIZE == 1)
             {
-                //printf("%*s- %s (%d octets)\n", indent, "", dp->d_name, taille(dp->d_name));
-                //printf("Nom du fichier : %s\n",dp->d_name);
+                
                 if (comparaison(valsize, dp->d_name) == true)
                 {   
-                    //printf("Ca rentre");
                     printf("%*s- %s\n", indent, "", dp->d_name); // on affiche le nom du fichier
                 }
-                // printf("%*s- %s\n", indent, "", dp->d_name); //on affiche le nom du fichier
-                // taille(dp->d_name);
+
             }
         }
         
