@@ -7,17 +7,9 @@
 #include <dirent.h>
 
 int FLAG_SIZE = 0;
+int FLAG_NAME = 0;
 
-char *hereorbefore(char *mot, int index)
-{
-    char *copy = strdup(mot);
-    copy[index] = '\0';
-    return copy;
-}
-char *hereorafter(char *mot, int index)
-{
-    return mot + index;
-}
+
 
 // q3
 int taille(char *nom)
@@ -36,7 +28,7 @@ int taille(char *nom)
     return 0;
 }
 
-bool comparaison(char *nom, char *fichier)
+bool compar_size(char *nom, char *fichier)
 {
     
     char signe = nom[0];
@@ -129,8 +121,14 @@ bool comparaison(char *nom, char *fichier)
         free(tamp-1);
         return false;
     }
-    printf("Comparaison arrive au bout sans avoir trouver de True\n");
     free(tamp-1);
+    return false;
+}
+
+bool compar_name(char* nom, char* fichier){
+    if (strcmp(nom,fichier)==0){
+        return true;
+    }
     return false;
 }
 
@@ -158,11 +156,17 @@ void listdir(const char *name, int indent, char *valsize, char *valname)
             if (FLAG_SIZE == 1)
             {
                 
-                if (comparaison(valsize, dp->d_name) == true)
+                if (compar_size(valsize, dp->d_name) == true)
                 {   
                     printf("%*s- %s\n", indent, "", dp->d_name); // on affiche le nom du fichier
                 }
 
+            }
+            if (FLAG_NAME == 1){
+                if (compar_name(valname, dp->d_name) == true)
+                {   
+                    printf("%*s- %s\n", indent, "", dp->d_name); // on affiche le nom du fichier
+                }
             }
         }
         
@@ -191,6 +195,7 @@ int main(int argc, char *argv[])
         };
         if (strcmp(argv[i], "-name") == 0)
         {
+            FLAG_NAME = 1;
             valname = argv[i + 1];
             break;
         }
