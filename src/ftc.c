@@ -38,14 +38,20 @@ int taille(char *nom)
 
 bool comparaison(char *nom, char *fichier)
 {
+    //printf("nom : %s\n",nom);
     char signe = nom[0];
-    char unité = nom[-1];
+    char unité = nom[strlen(nom)-1];
+    //printf("signe : %c\n",signe);
+    //printf("unité : %c\n",unité);
     char *tamp;
-    tamp = nom+1;
-    printf("1. %s\n",tamp);
-    tamp[strlen(tamp)-1]='\0';
-    printf("2. %s\n",tamp);
+    tamp =strdup(nom);
+    tamp=tamp+1;
+    //printf("1. %s\n",tamp);
+    tamp[strlen(nom)-2]='\0';
+    //printf("2. %s\n",tamp);
     
+    //printf("%s\n",signe);
+    //printf("%s\n",unité);
 
 
 
@@ -60,9 +66,10 @@ bool comparaison(char *nom, char *fichier)
     {
         if (unité == 'c')
         {
+            //printf("Signe et Unité trouvées");
             if (target < taille(fichier))
             {
-                //free(tamp);
+                free(tamp-1);
                 return true;
             }
         }
@@ -71,7 +78,7 @@ bool comparaison(char *nom, char *fichier)
             target = target * 1024;
             if (target < taille(fichier))
             {
-                //free(tamp);
+                free(tamp-1);
                 return true;
             }
         }
@@ -80,7 +87,7 @@ bool comparaison(char *nom, char *fichier)
             target = target * 1024 * 1024;
             if (target < taille(fichier))
             {
-                //free(tamp);
+                free(tamp-1);
                 return true;
             }
         }
@@ -89,11 +96,11 @@ bool comparaison(char *nom, char *fichier)
             target = target * 1024 * 1024 * 1024;
             if (target < taille(fichier))
             {
-                //free(tamp);
+                free(tamp-1);
                 return true;
             }
         }
-        //free(tamp);
+        free(tamp-1);
         return false;
     }
     if (signe == '-')
@@ -102,7 +109,7 @@ bool comparaison(char *nom, char *fichier)
         {
             if (target > taille(fichier))
             {
-                //free(tamp);
+                free(tamp-1);
                 return true;
             }
         }
@@ -111,7 +118,7 @@ bool comparaison(char *nom, char *fichier)
             target = target * 1024;
             if (target > taille(fichier))
             {
-                //free(tamp);
+                free(tamp-1);
                 return true;
             }
         }
@@ -120,7 +127,7 @@ bool comparaison(char *nom, char *fichier)
             target = target * 1024 * 1024;
             if (target > taille(fichier))
             {
-                //free(tamp);
+                free(tamp-1);
                 return true;
             }
         }
@@ -129,13 +136,15 @@ bool comparaison(char *nom, char *fichier)
             target = target * 1024 * 1024 * 1024;
             if (target > taille(fichier))
             {
-                //free(tamp);
+                free(tamp-1);
                 return true;
             }
         }
-        //free(tamp);
+        free(tamp-1);
         return false;
     }
+    printf("Comparaison arrive au bout sans avoir trouver de True\n");
+    free(tamp-1);
     return false;
 }
 
@@ -162,8 +171,11 @@ void listdir(const char *name, int indent, char *valsize, char *valname)
         {
             if (FLAG_SIZE == 1)
             {
+                //printf("%*s- %s (%d octets)\n", indent, "", dp->d_name, taille(dp->d_name));
+                //printf("Nom du fichier : %s\n",dp->d_name);
                 if (comparaison(valsize, dp->d_name) == true)
-                {
+                {   
+                    //printf("Ca rentre");
                     printf("%*s- %s\n", indent, "", dp->d_name); // on affiche le nom du fichier
                 }
                 // printf("%*s- %s\n", indent, "", dp->d_name); //on affiche le nom du fichier
@@ -200,7 +212,8 @@ int main(int argc, char *argv[])
             break;
         }
     }
-    listdir(".", 0, valsize, valname);
+    
+    listdir(argv[1], 0, valsize, valname);
 
     return 0;
 }
