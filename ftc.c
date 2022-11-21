@@ -5,10 +5,12 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <sys/stat.h>
+#include "ftc.h"
 
 int FLAG_SIZE = 0;
 int FLAG_NAME = 0;
-
+int FLAG_ET = 0;
 
 
 // q3
@@ -132,6 +134,10 @@ bool compar_name(char* nom, char* fichier){
     return false;
 }
 
+void et(){
+    
+}
+
 void listdir(const char *name, int indent, char *valsize, char *valname)
 {
     DIR *dirp;         // pointeur de répertoire
@@ -153,6 +159,9 @@ void listdir(const char *name, int indent, char *valsize, char *valname)
         }
         else // si c'est un fichier
         {
+            if (FLAG_ET > 1){
+                et();
+            }
             if (FLAG_SIZE == 1)
             {
                 
@@ -185,19 +194,22 @@ int main(int argc, char *argv[])
         if (strcmp(argv[i], "-test") == 0)
         {
             printf("La valeur du flag %s est %s.\n", argv[i + 1], argv[i + 2]);
-            break;
+            FLAG_ET++;
+            //break;
         };
         if (strcmp(argv[i], "-size") == 0)
         {
             FLAG_SIZE = 1;
+            FLAG_ET++;
             valsize = argv[i + 1];
-            break;
+            //break;
         };
         if (strcmp(argv[i], "-name") == 0)
         {
             FLAG_NAME = 1;
+            FLAG_ET++;
             valname = argv[i + 1];
-            break;
+            //break;
         }
     }
     
@@ -205,15 +217,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-/* bool in(char* list[],char* str){
-    int size = strlen(list);
-    for (int i = 0; i < size; i++){
-        if (list[i]==str){
-            return true;
-            break;
-        }
-    }
-}
-*/
-
