@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/stat.h>
-#include "ftc.h"
+
 
 int FLAG_SIZE = 0;
 int FLAG_NAME = 0;
@@ -138,7 +138,7 @@ void et(){
     
 }
 
-void listdir(const char *name, int indent, char *valsize, char *valname)
+void listdir(const char *name, char *valsize, char *valname)
 {
     DIR *dirp;         // pointeur de répertoire
     struct dirent *dp; // pointeur de fichier
@@ -154,28 +154,31 @@ void listdir(const char *name, int indent, char *valsize, char *valname)
             if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0) // si c'est le répertoire courant ou le répertoire parent
                 continue;
             snprintf(path, sizeof(path), "%s/%s", name, dp->d_name); // on concatène le chemin du répertoire courant avec le nom du répertoire
-            printf("%*s[%s]\n", indent, "", dp->d_name);             // on affiche le nom du répertoire
-            listdir(path, indent + 2, valsize, valname);             // on appelle la fonction récursivement
+            //printf("%s\n", dp->d_name);             // on affiche le nom du répertoire
+            listdir(path, valsize, valname);             // on appelle la fonction récursivement
         }
         else // si c'est un fichier
         {
             if (FLAG_ET > 1){
                 et();
             }
-            if (FLAG_SIZE == 1)
+            else if (FLAG_SIZE == 1)
             {
                 
                 if (compar_size(valsize, dp->d_name) == true)
                 {   
-                    printf("%*s- %s\n", indent, "", dp->d_name); // on affiche le nom du fichier
+                    printf("%s\n",dp->d_name); // on affiche le nom du fichier
                 }
 
             }
-            if (FLAG_NAME == 1){
+            else if (FLAG_NAME == 1){
                 if (compar_name(valname, dp->d_name) == true)
                 {   
-                    printf("%*s- %s\n", indent, "", dp->d_name); // on affiche le nom du fichier
+                    printf("%s\n",dp->d_name); // on affiche le nom du fichier
                 }
+            }
+            else {
+                printf("%s/%s\n",name,dp->d_name); // on affiche le nom du fichier
             }
         }
         
@@ -213,7 +216,9 @@ int main(int argc, char *argv[])
         }
     }
     
-    listdir(argv[1], 0, valsize, valname);
+    listdir(argv[1],valsize, valname);
 
     return 0;
 }
+
+//how to get the pwd of a repertory in c ?
