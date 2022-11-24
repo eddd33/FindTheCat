@@ -195,7 +195,7 @@ void listdir(const char *name, char *valsize, char *valname)
 {
     DIR *dirp;         // pointeur de répertoire
     struct dirent *dp; // pointeur de fichier
-
+    
     if (!(dirp = opendir(name))) // ouvre le repertoire
         return;
 
@@ -221,14 +221,14 @@ void listdir(const char *name, char *valsize, char *valname)
                 
                 if (compar_size(valsize, dp->d_name) == true)
                 {   
-                    printf("%s\n",dp->d_name); // on affiche le nom du fichier
+                    printf("%s/%s\n",name,dp->d_name); // on affiche le nom du fichier
                 }
 
             }
             else if (FLAG_NAME == 1){
                 if (compar_name(valname, dp->d_name) == true)
                 {   
-                    printf("%s\n",dp->d_name); // on affiche le nom du fichier
+                    printf("%s/%s\n",name,dp->d_name); // on affiche le nom du fichier
                 }
             }
             else {
