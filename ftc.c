@@ -6,12 +6,91 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <time.h>
 
 
 int FLAG_SIZE = 0;
 int FLAG_NAME = 0;
 int FLAG_ET = 0;
+int FLAG_DATE = 0;
 
+//q5
+bool dernier_acces(char* nom, char* fichier){
+    char signe;
+    char unité = nom[strlen(nom)-1];
+    char *tamp;
+    if (nom[0]=='+')
+    {
+        signe = nom[0];
+        tamp=strdup(nom);
+        tamp=tamp+1;
+        
+        tamp[strlen(nom)-2]='\0';
+    }
+    else
+    {
+        tamp=strdup(nom);
+        tamp[strlen(nom)-1]='\0';
+    }
+
+    struct stat st;
+    stat(fichier, &st);
+    time_t last = st.st_atime; //temps écoulé depuis le dernier accès
+
+    time_t t = time(NULL);//time_t type donnant en secondes le temps écoulé depuis le 1er janvier 1970
+
+    double diff = difftime(t, last); //différence entre le temps actuel et le dernier accès
+    if (signe == '+')
+    {
+        if(unité == 'm'){
+        if(diff > atoi(tamp)*60){
+            free(tamp-1);
+            return true;
+        }
+        }
+        else if(unité == 'h'){
+            if(diff > atoi(tamp)*3600){
+                free(tamp-1);
+                return true;
+            }
+        }
+        else if(unité == 'j'){
+            if(diff > atoi(tamp)*86400){
+                free(tamp-1);
+                return true;
+            }
+        }
+        free(tamp-1);
+        return false;
+    }
+    else
+    {
+        if(unité == 'm'){
+        if(diff <= atoi(tamp)*60){
+            free(tamp);
+            return true;
+        }
+        }
+        else if(unité == 'h'){
+            if(diff <= atoi(tamp)*3600){
+                free(tamp);
+                return true;
+            }
+        }
+        else if(unité == 'j'){
+            if(diff <= atoi(tamp)*86400){
+                free(tamp);
+                return true;
+            }
+        }
+        free(tamp);
+        return false;
+    }
+    
+    
+    free(tamp-1);
+    return false;
+}
 
 // q3
 int taille(char *nom)
@@ -191,7 +270,7 @@ void et(){
     
 }
 
-void listdir(const char *name, char *valsize, char *valname)
+void listdir(const char *name, char *valsize, char *valname, char *valdate)
 {
     DIR *dirp;         // pointeur de répertoire
     struct dirent *dp; // pointeur de fichier
@@ -208,7 +287,7 @@ void listdir(const char *name, char *valsize, char *valname)
                 continue;
             snprintf(path, sizeof(path), "%s/%s", name, dp->d_name); // on concatène le chemin du répertoire courant avec le nom du répertoire
             //printf("%s\n", dp->d_name);             // on affiche le nom du répertoire
-            listdir(path, valsize, valname);             // on appelle la fonction récursivement
+            listdir(path, valsize, valname, valdate);             // on appelle la fonction récursivement
         }
         else // si c'est un fichier
         {
@@ -231,6 +310,14 @@ void listdir(const char *name, char *valsize, char *valname)
                     printf("%s/%s\n",name,dp->d_name); // on affiche le nom du fichier
                 }
             }
+            else if (FLAG_DATE ==1 )
+            {
+                if (dernier_acces(valdate,dp->d_name) == true)
+                {
+                    printf("%s/%s\n",name,dp->d_name); // on affiche le nom du fichier
+                }
+            }
+            
             else {
                 printf("%s/%s\n",name,dp->d_name); // on affiche le nom du fichier
             }
@@ -246,6 +333,7 @@ int main(int argc, char *argv[])
     int size = strlen(*argv);
     char *valsize = NULL;
     char *valname = NULL;
+    char *valdate = NULL;
     for (int i = 0; i < size; i++)
     {
         //printf("voici l'arg i : %s\n", argv[i]);
@@ -269,9 +357,16 @@ int main(int argc, char *argv[])
             valname = argv[i + 1];
             break;
         }
+        if (strcmp(argv[i], "-date") == 0)
+        {
+            FLAG_DATE = 1;
+            FLAG_ET++;
+            valdate = argv[i + 1];
+            break;
+        }
     }
     
-    listdir(argv[1],valsize, valname);
+    listdir(argv[1],valsize, valname, valdate);
 
     return 0;
 }
