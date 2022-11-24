@@ -32,17 +32,29 @@ int taille(char *nom)
 
 bool compar_size(char *nom, char *fichier)
 {
-    
-    char signe = nom[0];
+
+    char signe;
     char unité = nom[strlen(nom)-1];
-    
     char *tamp;
-    tamp =strdup(nom);
-    tamp=tamp+1;
+    //printf("signe %c\n",nom[0]);
+    if (nom[0]=='+' || nom[0]=='-')
+    {
+        signe = nom[0];
+        tamp=strdup(nom);
+        tamp=tamp+1;
+        
+        tamp[strlen(nom)-2]='\0';
+    }
+    else
+    {
+        tamp=strdup(nom);
+        tamp[strlen(nom)-1]='\0';
+    }
     
-    tamp[strlen(nom)-2]='\0';
+    
 
     int target = atoi(tamp);
+    //printf("tamp %s\n",tamp);
     if (signe == '+')
     {
         if (unité == 'c')
@@ -83,7 +95,7 @@ bool compar_size(char *nom, char *fichier)
         free(tamp-1);
         return false;
     }
-    if (signe == '-')
+    else if (signe == '-')
     {
         if (unité == 'c')
         {
@@ -123,6 +135,47 @@ bool compar_size(char *nom, char *fichier)
         free(tamp-1);
         return false;
     }
+    else
+    {
+        if (unité == 'c')
+        {
+            //printf("target %d\n",target);
+            if (target == taille(fichier))
+            {
+                free(tamp);
+                return true;
+            }
+        }
+        if (unité == 'k')
+        {
+            target = target * 1024;
+            if (target == taille(fichier))
+            {
+                free(tamp-1);
+                return true;
+            }
+        }
+        if (unité == 'M')
+        {
+            target = target * 1024 * 1024;
+            if (target == taille(fichier))
+            {
+                free(tamp-1);
+                return true;
+            }
+        }
+        if (unité == 'G')
+        {
+            target = target * 1024 * 1024 * 1024;
+            if (target == taille(fichier))
+            {
+                free(tamp-1);
+                return true;
+            }
+        }
+        free(tamp);
+        return false;
+    }
     free(tamp-1);
     return false;
 }
@@ -159,6 +212,7 @@ void listdir(const char *name, char *valsize, char *valname)
         }
         else // si c'est un fichier
         {
+        
             if (FLAG_ET > 1){
                 et();
             }
