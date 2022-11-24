@@ -194,25 +194,26 @@ int main(int argc, char *argv[])
     char *valname = NULL;
     for (int i = 0; i < size; i++)
     {
+        //printf("voici l'arg i : %s\n", argv[i]);
         if (strcmp(argv[i], "-test") == 0)
         {
             printf("La valeur du flag %s est %s.\n", argv[i + 1], argv[i + 2]);
             FLAG_ET++;
-            //break;
+            break;
         };
         if (strcmp(argv[i], "-size") == 0)
         {
             FLAG_SIZE = 1;
             FLAG_ET++;
             valsize = argv[i + 1];
-            //break;
+            break;
         };
         if (strcmp(argv[i], "-name") == 0)
         {
             FLAG_NAME = 1;
             FLAG_ET++;
             valname = argv[i + 1];
-            //break;
+            break;
         }
     }
     
