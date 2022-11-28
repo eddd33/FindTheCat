@@ -3,13 +3,15 @@
 
 struct liste
 {
-    fichier *head;
+    file *head;
+};
+typedef struct liste liste;
+struct file
+{
+    struct file *next;
+    struct dirent *d; // pointeur vers le file
 };
 
-struct fichier
-{
-    struct fichier *next;
-    struct dirent *d; // pointeur vers le fichier
-};
+typedef struct file file;
 
 #endif

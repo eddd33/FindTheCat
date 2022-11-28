@@ -7,12 +7,25 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <assert.h>
+#include "ftc.h"
 
 
 int FLAG_SIZE = 0;
 int FLAG_NAME = 0;
 int FLAG_ET = 0;
 int FLAG_DATE = 0;
+
+bool isEmpty(liste *liste){
+    if (liste->head==NULL){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+
 
 //q5
 bool dernier_acces(char* nom, char* fichier){
@@ -368,6 +381,8 @@ int main(int argc, char *argv[])
     
     listdir(argv[1],valsize, valname, valdate);
 
+
+    
     return 0;
 }
 
