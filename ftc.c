@@ -25,6 +25,144 @@ bool isEmpty(liste *liste){
     }
 }
 
+void retire(file *element,liste* linked_list){
+
+    if (!isEmpty(linked_list)){                    //on vérifie que le dictionnaire n'est pas vide
+        file* current=linked_list->head;      //on initialise notre élément courant à la tête de la liste
+        file* previous;                //on prévoit de garder en mémoire l'élément précédant courant
+
+        if (current==linked_list->head && current==element){          //si l'élément à retirer est la tête de liste
+            linked_list->head=current->next;                           //on donne à la liste pour nouvelle tête le suivant de la tête
+            free(current->d);
+            free(current);                                      //on free l'élément
+        }
+
+        else{
+            while(current!=element && current!=NULL){           //on cherche l'élément dans la liste
+                previous=current;           
+                current=current->next;                          //on parcourt jusqu'à trouver l'élément
+            }
+            if (current!=NULL && current->next!=NULL){          //si on à trouvé l'élément (cad que current n'est pas vide) et qu'il a un suivant
+                file* suivant=current->next;               //on enregistre sont suivant
+                free(current->d);
+                free(current);                                  //on free l'élément
+                previous->next=suivant;                         //on reconnecte la liste en donnant pour suivaant au précédent de l'élément son suivant
+            }
+            else if (current!=NULL && current->next==NULL){     //si on à trouvé l'élément (cad que current n'est pas vide) et qu'il n'a pas de suivant
+                printf("on retire le dernier %s\n",current->d);
+                //previous->next==NULL;
+                free(current->d);
+                free(current);                                  //on free l'élément
+                
+            }
+        }    
+    }
+}
+
+liste *list_create()
+{
+    liste *new_list = calloc(1, sizeof(liste));
+
+    /*
+    liste *new_list = malloc(sizeof(liste));
+    new_list->head = NULL;
+    */
+
+    return new_list;
+}
+
+void liste_destroy(liste *listint)
+{
+    while (listint->head != NULL)
+    {
+        file *aSupprimer = listint->head;
+        listint->head = listint->head->next;
+        free(aSupprimer);
+    }
+    free(listint);
+}
+
+void ajout_dico(char* fichier, liste *dico){
+    
+    file *new_element = calloc(1,sizeof(file));
+    
+    new_element->d=fichier;
+    new_element->next = NULL;
+    file *current = dico->head;
+
+    if (current == NULL)
+    {
+        dico->head = new_element;
+        return;
+    }
+    while (current->next != NULL)
+    {
+        current = current->next;
+    }
+    current->next = new_element;
+
+}
+
+void element_print(file* fichier){
+    printf("%s ",fichier->d);
+
+}
+void liste_print(liste* dico){
+    if (dico == NULL){
+        exit(EXIT_FAILURE);
+    }
+    file *actuel = dico->head;
+    
+    if (actuel==NULL){
+        printf("C'est vide\n");
+    }
+    else{
+        printf("[ ");
+        while (actuel != NULL){
+            element_print(actuel);
+            actuel = actuel->next;
+        }
+        printf("]\n ");
+    }   
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //q5
