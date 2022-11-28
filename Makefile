@@ -3,7 +3,7 @@
 ##########################
 CC=clang
 CFLAGS=-Wall -Wextra -pedantic -fdiagnostics-color=always
-CFLAGS+=$(CPPFLAGS) -O0 -g3  -fno-omit-frame-pointer -fno-optimize-sibling-calls
+CFLAGS+=$(CPPFLAGS) -O0 -g3 -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls
 
 
 
@@ -19,7 +19,7 @@ ftc: ftc.o
 
 
 # Object files
-ftc.o:  ftc.c
+ftc.o:  ftc.c ftc.h
 
 # Format is:
 ## file_name.o: <dependency.o> <header_file.h> file_name.c

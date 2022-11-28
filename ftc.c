@@ -1,168 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <time.h>
-#include <assert.h>
 #include "ftc.h"
-
 
 int FLAG_SIZE = 0;
 int FLAG_NAME = 0;
 int FLAG_ET = 0;
 int FLAG_DATE = 0;
-
-bool isEmpty(liste *liste){
-    if (liste->head==NULL){
-        return true;
-    }
-    else{
-        return false;
-    }
-}
-
-void retire(file *element,liste* linked_list){
-
-    if (!isEmpty(linked_list)){                    //on vérifie que le dictionnaire n'est pas vide
-        file* current=linked_list->head;      //on initialise notre élément courant à la tête de la liste
-        file* previous;                //on prévoit de garder en mémoire l'élément précédant courant
-
-        if (current==linked_list->head && current==element){          //si l'élément à retirer est la tête de liste
-            linked_list->head=current->next;                           //on donne à la liste pour nouvelle tête le suivant de la tête
-            free(current->d);
-            free(current);                                      //on free l'élément
-        }
-
-        else{
-            while(current!=element && current!=NULL){           //on cherche l'élément dans la liste
-                previous=current;           
-                current=current->next;                          //on parcourt jusqu'à trouver l'élément
-            }
-            if (current!=NULL && current->next!=NULL){          //si on à trouvé l'élément (cad que current n'est pas vide) et qu'il a un suivant
-                file* suivant=current->next;               //on enregistre sont suivant
-                free(current->d);
-                free(current);                                  //on free l'élément
-                previous->next=suivant;                         //on reconnecte la liste en donnant pour suivaant au précédent de l'élément son suivant
-            }
-            else if (current!=NULL && current->next==NULL){     //si on à trouvé l'élément (cad que current n'est pas vide) et qu'il n'a pas de suivant
-                printf("on retire le dernier %s\n",current->d);
-                //previous->next==NULL;
-                free(current->d);
-                free(current);                                  //on free l'élément
-                
-            }
-        }    
-    }
-}
-
-liste *list_create()
-{
-    liste *new_list = calloc(1, sizeof(liste));
-
-    /*
-    liste *new_list = malloc(sizeof(liste));
-    new_list->head = NULL;
-    */
-
-    return new_list;
-}
-
-void liste_destroy(liste *listint)
-{
-    while (listint->head != NULL)
-    {
-        file *aSupprimer = listint->head;
-        listint->head = listint->head->next;
-        free(aSupprimer);
-    }
-    free(listint);
-}
-
-void ajout_dico(char* fichier, liste *dico){
-    
-    file *new_element = calloc(1,sizeof(file));
-    
-    new_element->d=fichier;
-    new_element->next = NULL;
-    file *current = dico->head;
-
-    if (current == NULL)
-    {
-        dico->head = new_element;
-        return;
-    }
-    while (current->next != NULL)
-    {
-        current = current->next;
-    }
-    current->next = new_element;
-
-}
-
-void element_print(file* fichier){
-    printf("%s ",fichier->d);
-
-}
-void liste_print(liste* dico){
-    if (dico == NULL){
-        exit(EXIT_FAILURE);
-    }
-    file *actuel = dico->head;
-    
-    if (actuel==NULL){
-        printf("C'est vide\n");
-    }
-    else{
-        printf("[ ");
-        while (actuel != NULL){
-            element_print(actuel);
-            actuel = actuel->next;
-        }
-        printf("]\n ");
-    }   
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //q5
@@ -417,9 +258,6 @@ bool compar_name(char* nom, char* fichier){
     return false;
 }
 
-void et(){
-    
-}
 
 void listdir(const char *name, char *valsize, char *valname, char *valdate)
 {
@@ -442,34 +280,34 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
         }
         else // si c'est un fichier
         {
-        
-            if (FLAG_ET > 1){
-                et();
-            }
-            else if (FLAG_SIZE == 1)
+            int test_valide=1;
+            
+            if (FLAG_SIZE == 1)
             {
-                
-                if (compar_size(valsize, dp->d_name) == true)
+            
+                if (compar_size(valsize, dp->d_name) == false)
                 {   
-                    printf("%s/%s\n",name,dp->d_name); // on affiche le nom du fichier
+                    test_valide=0;
                 }
 
             }
-            else if (FLAG_NAME == 1){
-                if (compar_name(valname, dp->d_name) == true)
+            if (FLAG_NAME == 1){
+            
+                if (compar_name(valname, dp->d_name) == false)
                 {   
-                    printf("%s/%s\n",name,dp->d_name); // on affiche le nom du fichier
+                    test_valide=0;
                 }
             }
-            else if (FLAG_DATE ==1 )
+            if (FLAG_DATE == 1)
             {
-                if (dernier_acces(valdate,dp->d_name) == true)
+           
+                if (dernier_acces(valdate,dp->d_name) == false)
                 {
-                    printf("%s/%s\n",name,dp->d_name); // on affiche le nom du fichier
+                    test_valide=0;
                 }
             }
             
-            else {
+            if (test_valide==1) {
                 printf("%s/%s\n",name,dp->d_name); // on affiche le nom du fichier
             }
         }
@@ -491,29 +329,21 @@ int main(int argc, char *argv[])
         if (strcmp(argv[i], "-test") == 0)
         {
             printf("La valeur du flag %s est %s.\n", argv[i + 1], argv[i + 2]);
-            FLAG_ET++;
-            break;
         };
         if (strcmp(argv[i], "-size") == 0)
         {
             FLAG_SIZE = 1;
-            FLAG_ET++;
             valsize = argv[i + 1];
-            break;
         };
         if (strcmp(argv[i], "-name") == 0)
         {
             FLAG_NAME = 1;
-            FLAG_ET++;
             valname = argv[i + 1];
-            break;
         }
         if (strcmp(argv[i], "-date") == 0)
         {
             FLAG_DATE = 1;
-            FLAG_ET++;
             valdate = argv[i + 1];
-            break;
         }
     }
     
