@@ -11,6 +11,8 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <assert.h>
+#include <errno.h>
+#include <regex.h>
 
 bool dernier_acces(char* nom, char* fichier);
 unsigned long taille(char *nom);

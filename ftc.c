@@ -1,4 +1,5 @@
 #include "ftc.h"
+#include "MegaMimes.h"
 
 int FLAG_SIZE = 0;
 int FLAG_NAME = 0;
