@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <wctype.h>
 #include <limits.h>
+#include <stdbool.h>
 	
 static void splitFileParts( const char* path, char** filename, char** fileextension, char** fileparents)
 {
