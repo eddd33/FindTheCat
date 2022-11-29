@@ -13,7 +13,7 @@
 #include <assert.h>
 
 bool dernier_acces(char* nom, char* fichier);
-int taille(char *nom);
+unsigned long taille(char *nom);
 bool compar_size(char *nom, char *fichier);
 bool compar_name(char* nom, char* fichier);
 void listdir(const char *name, char *valsize, char *valname, char *valdate);

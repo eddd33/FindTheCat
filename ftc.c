@@ -85,11 +85,11 @@ bool dernier_acces(char* nom, char* fichier){
 }
 
 // q3
-int taille(char *nom)
+unsigned long taille(char *nom)
 {
     FILE *fichier = NULL;      // pointeur sur le fichier
     fichier = fopen(nom, "r"); // ouverture du fichier en lecture
-    int size = 0;
+    unsigned long size = 0;
     if (fichier != NULL)
     {
         fseek(fichier, 0, SEEK_END); // on lit le fichier jusqu'à la fin
@@ -107,7 +107,7 @@ bool compar_size(char *nom, char *fichier)
     char signe;
     char unité = nom[strlen(nom)-1];
     char *tamp;
-    //printf("signe %c\n",nom[0]);
+
     if (nom[0]=='+' || nom[0]=='-')
     {
         signe = nom[0];
@@ -122,10 +122,8 @@ bool compar_size(char *nom, char *fichier)
         tamp[strlen(nom)-1]='\0';
     }
     
-    
 
-    int target = atoi(tamp);
-    //printf("tamp %s\n",tamp);
+    unsigned long target = atoi(tamp);
     if (signe == '+')
     {
         if (unité == 'c')
@@ -210,7 +208,6 @@ bool compar_size(char *nom, char *fichier)
     {
         if (unité == 'c')
         {
-            //printf("target %d\n",target);
             if (target == taille(fichier))
             {
                 free(tamp);
@@ -284,12 +281,10 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
             
             if (FLAG_SIZE == 1)
             {
-            
                 if (compar_size(valsize, dp->d_name) == false)
                 {   
                     test_valide=0;
                 }
-
             }
             if (FLAG_NAME == 1){
             
@@ -300,13 +295,11 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
             }
             if (FLAG_DATE == 1)
             {
-           
                 if (dernier_acces(valdate,dp->d_name) == false)
                 {
                     test_valide=0;
                 }
             }
-            
             if (test_valide==1) {
                 printf("%s/%s\n",name,dp->d_name); // on affiche le nom du fichier
             }
