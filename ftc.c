@@ -86,20 +86,11 @@ bool dernier_acces(char* nom, char* fichier){
 }
 
 // q3
-unsigned long taille(char *nom)
+unsigned long taille(char *fichier)
 {
-    FILE *fichier = NULL;      // pointeur sur le fichier
-    fichier = fopen(nom, "r"); // ouverture du fichier en lecture
-    unsigned long size = 0;
-    if (fichier != NULL)
-    {
-        fseek(fichier, 0, SEEK_END); // on lit le fichier jusqu'à la fin
-        size = ftell(fichier);       // on récupère la position du curseur
-        // printf("Taille du fichier : %d octets");
-        return size;
-        fclose(fichier);
-    }
-    return 0;
+    struct stat st;
+    stat(fichier, &st);
+    return st.st_size;
 }
 
 bool compar_size(char *nom, char *fichier)
