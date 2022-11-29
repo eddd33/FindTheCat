@@ -320,31 +320,41 @@ int main(int argc, char *argv[])
 {
 
     int size = strlen(*argv);
-    char *valsize = NULL;
-    char *valname = NULL;
-    char *valdate = NULL;
-    for (int i = 0; i < size; i++)
+    char *valsize = "ini";
+    char *valname = "ini";
+    char *valdate = "ini";
+
+
+    int i=0;
+    while (argv[i]!='\0')
     {
-        //printf("voici l'arg i : %s\n", argv[i]);
+        
+
         if (strcmp(argv[i], "-test") == 0)
         {
             printf("La valeur du flag %s est %s.\n", argv[i + 1], argv[i + 2]);
+            
         };
         if (strcmp(argv[i], "-size") == 0)
         {
             FLAG_SIZE = 1;
             valsize = argv[i + 1];
+            
         };
         if (strcmp(argv[i], "-name") == 0)
         {
             FLAG_NAME = 1;
             valname = argv[i + 1];
+            
         }
         if (strcmp(argv[i], "-date") == 0)
         {
             FLAG_DATE = 1;
             valdate = argv[i + 1];
+            
         }
+
+        i++;
     }
     
     listdir(argv[1],valsize, valname, valdate);
