@@ -3,8 +3,8 @@
 
 int FLAG_SIZE = 0;
 int FLAG_NAME = 0;
-int FLAG_ET = 0;
 int FLAG_DATE = 0;
+int FLAG_MIME = 0;
 
 // q5
 bool dernier_acces(char *nom, char *fichier)
@@ -271,12 +271,13 @@ bool compar_name(char *nom, char *fichier)
     }
 }
 
-/* regex_t regex;
-
-if (strcmp(nom,fichier)==0){
-    return true;
+char* get_ext(char *filename){
+    char* extension=strrchr(filename, '.');
+    if (extension!=NULL && extension !='.'){
+        extension=extension+1;
+    }
+    return extension;
 }
-return false; */
 
 void listdir(const char *name, char *valsize, char *valname, char *valdate)
 {
@@ -323,6 +324,10 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
                     test_valide = 0;
                 }
             }
+            if (FLAG_MIME ==1)
+            {
+                break;
+            }
             if (test_valide == 1)
             {
                 printf("%s/%s\n", name, dp->d_name); // on affiche le nom du fichier
@@ -363,13 +368,17 @@ int main(int argc, char *argv[])
             FLAG_DATE = 1;
             valdate = argv[i + 1];
         }
+        if (strcmp(argv[i], "-mime") == 0)
+        {
+            FLAG_MIME = 1;
 
+        }
         i++;
     }
 
     listdir(argv[1], valsize, valname, valdate);
-
     return 0;
 }
 
-// how to get the pwd of a repertory in c ?
+
+//how to get the mime type
