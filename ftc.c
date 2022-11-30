@@ -324,10 +324,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
                     test_valide = 0;
                 }
             }
-            if (FLAG_MIME ==1)
-            {
-                break;
-            }
+            
             if (test_valide == 1)
             {
                 printf("%s/%s\n", name, dp->d_name); // on affiche le nom du fichier
