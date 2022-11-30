@@ -31,7 +31,7 @@ gcc -c ftc.c
 ##########################
 
 clean:
-	rm -f *.o *_test ftc
+	rm -f *.o *_test
 
 # For the test, replace `solveur_main_test` with your program name.
 
