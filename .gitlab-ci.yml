@@ -28,7 +28,7 @@ build:
 test-arguments:
   stage: test
   script:
-    - ./tests/test_args
+    - LSAN_OPTIONS=verbosity=1:log_threads=1 ./tests/test_args
   dependencies: 
     - build
 
