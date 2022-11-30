@@ -14,14 +14,14 @@
 
 # Program:
 ftc: ftc.o
-
+gcc -o ftc ftc.o
 # Format is:
 ## program_name: file_name1.o file_name2.o
 
 
 # Object files
 ftc.o:  ftc.c ftc.h
-
+gcc -c ftc.c
 # Format is:
 ## file_name.o: <dependency.o> <header_file.h> file_name.c
 
@@ -31,7 +31,7 @@ ftc.o:  ftc.c ftc.h
 ##########################
 
 clean:
-	rm -f *.o *_test
+	rm -f *.o *_test ftc
 
 # For the test, replace `solveur_main_test` with your program name.
 
