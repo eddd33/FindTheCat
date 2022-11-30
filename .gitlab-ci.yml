@@ -4,6 +4,13 @@ stages:
   - build
   - test
 
+variables:
+    CC: "clang"
+    CXX: "clang++"
+    ASAN_OPTIONS: "detect_leaks=0"
+
+
+
 build:
   stage: build
   before_script:
