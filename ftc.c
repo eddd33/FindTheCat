@@ -335,7 +335,9 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
             }
             if (FLAG_DATE == 1)
             {
-                if (dernier_acces(valdate, dp->d_name) == false)
+                char *temp[1024];
+                snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
+                if (dernier_acces(valdate, temp) == false)
                 {
                     test_valide = 0;
                 }
@@ -409,6 +411,7 @@ int main(int argc, char *argv[])
     }
 
     if (FLAG_TEST == 0){
+        printf("Ca rentre");
         listdir(argv[1], valsize, valname, valdate);
     }
     
