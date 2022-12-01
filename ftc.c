@@ -280,17 +280,24 @@ bool compar_name(char *nom, char *fichier)
     }
 }
 
-char *get_ext(char *filename)
-{
-    char *extension = strrchr(filename, '.');
-    if (extension != NULL && extension != '.')
-    {
-        extension = extension + 1;
+bool compar_mime(char* valmime, char* fichier){
+    char** extensions = getMegaMimeExtensions(valmime);
+    //printf("what?%s\n",extensions);
+    int e = 0;
+    while (extensions[e] != NULL){
+       
+        if (compar_name(extensions[e],fichier) == true){
+            freeMegaStringArray(extensions);
+            return true;
+        }
+        e++;
     }
-    return extension;
+
+    freeMegaStringArray(extensions);
+    return false;
 }
 
-void listdir(const char *name, char *valsize, char *valname, char *valdate)
+void listdir(const char *name, char *valsize, char *valname, char *valdate, char* valmime)
 {
     DIR *dirp;         // pointeur de répertoire
     struct dirent *dp; // pointeur de fichier
@@ -300,7 +307,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
 
     while ((dp = readdir(dirp)) != NULL) // tant qu'il y a des fichiers
     {
-
+        
         int test_valide = 1;
         if (dp->d_type == DT_DIR) // si c'est un répertoire (DT_DIR est le type répertoire)
         {
@@ -314,7 +321,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
                 printf("%s/%s\n", name, dp->d_name);
             }
             // on affiche le nom du répertoire
-            listdir(path, valsize, valname, valdate); // on appelle la fonction récursivement
+            listdir(path, valsize, valname, valdate, valmime); // on appelle la fonction récursivement
         }
         else // si c'est un fichier
         {
@@ -345,6 +352,11 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
                     test_valide = 0;
                 }
             }
+            if (FLAG_MIME == 1){
+                if (compar_mime(valmime, dp->d_name) == false){
+                    test_valide=0;
+                }
+            }
 
             if (test_valide == 1)
             {
@@ -363,7 +375,7 @@ int main(int argc, char *argv[])
     char *valsize = "ini";
     char *valname = "ini";
     char *valdate = "ini";
-
+    char *valmime = "ini";
     int i = 0;
 
     if (argv[2] == '\0')
@@ -411,6 +423,7 @@ int main(int argc, char *argv[])
             if (strcmp(argv[i], "-mime") == 0)
             {
                 FLAG_MIME = 1;
+                valmime = argv[i+1];
             }
             i++;
         }
@@ -422,7 +435,7 @@ int main(int argc, char *argv[])
         if (STARTING_POINT[strlen(STARTING_POINT)-1]=='/'){
             STARTING_POINT[strlen(STARTING_POINT)-1]='\0';
         }
-        listdir(STARTING_POINT, valsize, valname, valdate);
+        listdir(STARTING_POINT, valsize, valname, valdate, valmime);
     }
 
     return 0;

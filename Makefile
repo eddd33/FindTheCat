@@ -13,15 +13,15 @@ LDFLAGS+=-fsanitize=address
 ############################
 
 # Program:
-ftc: ftc.o
+ftc: ftc.o MegaMimes.o
 
 # Format is:
 ## program_name: file_name1.o file_name2.o
 
 
 # Object files
-ftc.o:  ftc.c ftc.h
-
+ftc.o:  ftc.c ftc.h MegaMimes.h
+MegaMimes.o : MegaMimes.c MegaMimes.h
 # Format is:
 ## file_name.o: <dependency.o> <header_file.h> file_name.c
 
