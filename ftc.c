@@ -5,6 +5,8 @@ int FLAG_SIZE = 0;
 int FLAG_NAME = 0;
 int FLAG_DATE = 0;
 int FLAG_MIME = 0;
+int FLAG_NOOPTION = 0;
+int FLAG_TEST = 0;
 
 // q5
 bool dernier_acces(char *nom, char *fichier)
@@ -99,12 +101,12 @@ bool dernier_acces(char *nom, char *fichier)
 // q3
 unsigned long taille(char *fichier)
 {
-    
+
     struct stat st;
     stat(fichier, &st);
-    
+
     unsigned long filesize = st.st_size;
-    //printf("%lu %s\n",filesize, fichier);
+    // printf("%lu %s\n",filesize, fichier);
     return filesize;
 }
 
@@ -265,20 +267,24 @@ bool compar_name(char *nom, char *fichier)
         return false;
 
     ret = regexec(&regex, fichier, 0, NULL, 0);
-    if (ret != 0){
+    if (ret != 0)
+    {
         regfree(&regex);
         return false;
     }
-    else{
+    else
+    {
         regfree(&regex);
         return true;
     }
 }
 
-char* get_ext(char *filename){
-    char* extension=strrchr(filename, '.');
-    if (extension!=NULL && extension !='.'){
-        extension=extension+1;
+char *get_ext(char *filename)
+{
+    char *extension = strrchr(filename, '.');
+    if (extension != NULL && extension != '.')
+    {
+        extension = extension + 1;
     }
     return extension;
 }
@@ -293,23 +299,27 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
 
     while ((dp = readdir(dirp)) != NULL) // tant qu'il y a des fichiers
     {
+        int test_valide = 1;
         if (dp->d_type == DT_DIR) // si c'est un répertoire (DT_DIR est le type répertoire)
         {
             char path[1024];                                                   // création d'un chemin
             if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0) // si c'est le répertoire courant ou le répertoire parent
                 continue;
             snprintf(path, sizeof(path), "%s/%s", name, dp->d_name); // on concatène le chemin du répertoire courant avec le nom du répertoire
-            // printf("%s\n", dp->d_name);             // on affiche le nom du répertoire
+
+            if (FLAG_NOOPTION==1){
+                printf("%s/%s\n",name,dp->d_name);
+            }
+            // on affiche le nom du répertoire
             listdir(path, valsize, valname, valdate); // on appelle la fonction récursivement
         }
         else // si c'est un fichier
         {
-            int test_valide = 1;
 
             if (FLAG_SIZE == 1)
             {
-                char* temp[1024];
-                snprintf(temp,sizeof(temp),"%s/%s",name,dp->d_name);
+                char *temp[1024];
+                snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
                 if (compar_size(valsize, temp) == false)
                 {
                     test_valide = 0;
@@ -330,10 +340,10 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
                     test_valide = 0;
                 }
             }
-            
+
             if (test_valide == 1)
             {
-                
+
                 printf("%s/%s\n", name, dp->d_name); // on affiche le nom du fichier
             }
         }
@@ -350,41 +360,52 @@ int main(int argc, char *argv[])
     char *valdate = "ini";
 
     int i = 0;
-    while (argv[i] != '\0')
+
+    if (argv[2] == '\0')
     {
+        FLAG_NOOPTION = 1;
+        printf("%s\n", argv[1]);
+    }
+    else
+    {
+        while (argv[i] != '\0')
+        {
 
-        if (strcmp(argv[i], "-test") == 0)
-        {
-            printf("La valeur du flag %s est %s.\n", argv[i + 1], argv[i + 2]);
-        };
-        if (strcmp(argv[i], "-size") == 0)
-        {
-            FLAG_SIZE = 1;
-            valsize = argv[i + 1];
-        };
-        if (strcmp(argv[i], "-name") == 0)
-        {
-            FLAG_NAME = 1;
-            valname = argv[i + 1];
+            if (strcmp(argv[i], "-test") == 0)
+            {
+                FLAG_TEST =1;
+                printf("La valeur du flag %s est %s.\n", argv[i + 1], argv[i + 2]);
+            };
+            if (strcmp(argv[i], "-size") == 0)
+            {
+                FLAG_SIZE = 1;
+                valsize = argv[i + 1];
+            };
+            if (strcmp(argv[i], "-name") == 0)
+            {
+                FLAG_NAME = 1;
+                valname = argv[i + 1];
+            }
+            if (strcmp(argv[i], "-date") == 0)
+            {
+                FLAG_DATE = 1;
+                valdate = argv[i + 1];
+            }
+            if (strcmp(argv[i], "-mime") == 0)
+            {
+                FLAG_MIME = 1;
+            }
+            i++;
         }
-        if (strcmp(argv[i], "-date") == 0)
-        {
-            FLAG_DATE = 1;
-            valdate = argv[i + 1];
-        }
-        if (strcmp(argv[i], "-mime") == 0)
-        {
-            FLAG_MIME = 1;
-
-        }
-        i++;
     }
 
+    if (FLAG_TEST == 0){
+        listdir(argv[1], valsize, valname, valdate);
+    }
     
 
-    listdir(argv[1], valsize, valname, valdate);
+   
     return 0;
 }
 
-
-//how to get the mime type
+// how to get the mime type
