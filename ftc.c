@@ -10,7 +10,7 @@ int FLAG_MIME = 0;
 bool dernier_acces(char *nom, char *fichier)
 {
     char signe;
-    char unité = nom[strlen(nom) - 1];
+    char unit = nom[strlen(nom) - 1];
     char *tamp;
     if (nom[0] == '+')
     {
@@ -35,7 +35,7 @@ bool dernier_acces(char *nom, char *fichier)
     double diff = difftime(t, last); // différence entre le temps actuel et le dernier accès
     if (signe == '+')
     {
-        if (unité == 'm')
+        if (unit == 'm')
         {
             if (diff > atoi(tamp) * 60)
             {
@@ -43,7 +43,7 @@ bool dernier_acces(char *nom, char *fichier)
                 return true;
             }
         }
-        else if (unité == 'h')
+        else if (unit == 'h')
         {
             if (diff > atoi(tamp) * 3600)
             {
@@ -51,7 +51,7 @@ bool dernier_acces(char *nom, char *fichier)
                 return true;
             }
         }
-        else if (unité == 'j')
+        else if (unit == 'j')
         {
             if (diff > atoi(tamp) * 86400)
             {
@@ -64,7 +64,7 @@ bool dernier_acces(char *nom, char *fichier)
     }
     else
     {
-        if (unité == 'm')
+        if (unit == 'm')
         {
             if (diff <= atoi(tamp) * 60)
             {
@@ -72,7 +72,7 @@ bool dernier_acces(char *nom, char *fichier)
                 return true;
             }
         }
-        else if (unité == 'h')
+        else if (unit == 'h')
         {
             if (diff <= atoi(tamp) * 3600)
             {
@@ -80,7 +80,7 @@ bool dernier_acces(char *nom, char *fichier)
                 return true;
             }
         }
-        else if (unité == 'j')
+        else if (unit == 'j')
         {
             if (diff <= atoi(tamp) * 86400)
             {
@@ -99,16 +99,20 @@ bool dernier_acces(char *nom, char *fichier)
 // q3
 unsigned long taille(char *fichier)
 {
+    
     struct stat st;
     stat(fichier, &st);
-    return st.st_size;
+    
+    unsigned long filesize = st.st_size;
+    //printf("%lu %s\n",filesize, fichier);
+    return filesize;
 }
 
 bool compar_size(char *nom, char *fichier)
 {
 
     char signe;
-    char unité = nom[strlen(nom) - 1];
+    char unit = nom[strlen(nom) - 1];
     char *tamp;
 
     if (nom[0] == '+' || nom[0] == '-')
@@ -128,7 +132,7 @@ bool compar_size(char *nom, char *fichier)
     unsigned long target = atoi(tamp);
     if (signe == '+')
     {
-        if (unité == 'c')
+        if (unit == 'c')
         {
             if (target < taille(fichier))
             {
@@ -136,7 +140,7 @@ bool compar_size(char *nom, char *fichier)
                 return true;
             }
         }
-        if (unité == 'k')
+        if (unit == 'k')
         {
             target = target * 1024;
             if (target < taille(fichier))
@@ -145,7 +149,7 @@ bool compar_size(char *nom, char *fichier)
                 return true;
             }
         }
-        if (unité == 'M')
+        if (unit == 'M')
         {
             target = target * 1024 * 1024;
             if (target < taille(fichier))
@@ -154,7 +158,7 @@ bool compar_size(char *nom, char *fichier)
                 return true;
             }
         }
-        if (unité == 'G')
+        if (unit == 'G')
         {
             target = target * 1024 * 1024 * 1024;
             if (target < taille(fichier))
@@ -168,7 +172,7 @@ bool compar_size(char *nom, char *fichier)
     }
     else if (signe == '-')
     {
-        if (unité == 'c')
+        if (unit == 'c')
         {
             if (target > taille(fichier))
             {
@@ -176,7 +180,7 @@ bool compar_size(char *nom, char *fichier)
                 return true;
             }
         }
-        if (unité == 'k')
+        if (unit == 'k')
         {
             target = target * 1024;
             if (target > taille(fichier))
@@ -185,7 +189,7 @@ bool compar_size(char *nom, char *fichier)
                 return true;
             }
         }
-        if (unité == 'M')
+        if (unit == 'M')
         {
             target = target * 1024 * 1024;
             if (target > taille(fichier))
@@ -194,7 +198,7 @@ bool compar_size(char *nom, char *fichier)
                 return true;
             }
         }
-        if (unité == 'G')
+        if (unit == 'G')
         {
             target = target * 1024 * 1024 * 1024;
             if (target > taille(fichier))
@@ -208,7 +212,7 @@ bool compar_size(char *nom, char *fichier)
     }
     else
     {
-        if (unité == 'c')
+        if (unit == 'c')
         {
             if (target == taille(fichier))
             {
@@ -216,7 +220,7 @@ bool compar_size(char *nom, char *fichier)
                 return true;
             }
         }
-        if (unité == 'k')
+        if (unit == 'k')
         {
             target = target * 1024;
             if (target == taille(fichier))
@@ -225,7 +229,7 @@ bool compar_size(char *nom, char *fichier)
                 return true;
             }
         }
-        if (unité == 'M')
+        if (unit == 'M')
         {
             target = target * 1024 * 1024;
             if (target == taille(fichier))
@@ -234,7 +238,7 @@ bool compar_size(char *nom, char *fichier)
                 return true;
             }
         }
-        if (unité == 'G')
+        if (unit == 'G')
         {
             target = target * 1024 * 1024 * 1024;
             if (target == taille(fichier))
@@ -304,7 +308,9 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
 
             if (FLAG_SIZE == 1)
             {
-                if (compar_size(valsize, dp->d_name) == false)
+                char* temp[1024];
+                snprintf(temp,sizeof(temp),"%s/%s",name,dp->d_name);
+                if (compar_size(valsize, temp) == false)
                 {
                     test_valide = 0;
                 }
@@ -327,6 +333,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
             
             if (test_valide == 1)
             {
+                
                 printf("%s/%s\n", name, dp->d_name); // on affiche le nom du fichier
             }
         }
@@ -372,6 +379,8 @@ int main(int argc, char *argv[])
         }
         i++;
     }
+
+    
 
     listdir(argv[1], valsize, valname, valdate);
     return 0;
