@@ -7,6 +7,7 @@ int FLAG_DATE = 0;
 int FLAG_MIME = 0;
 int FLAG_NOOPTION = 0;
 int FLAG_TEST = 0;
+char* STARTING_POINT;
 
 // q5
 bool dernier_acces(char *nom, char *fichier)
@@ -262,7 +263,7 @@ bool compar_name(char *nom, char *fichier)
     regex_t regex;
     int ret;
 
-    ret = regcomp(&regex, nom, 0);
+    ret = regcomp(&regex, nom, REG_EXTENDED);
     if (ret != 0)
         return false;
 
@@ -299,6 +300,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
 
     while ((dp = readdir(dirp)) != NULL) // tant qu'il y a des fichiers
     {
+
         int test_valide = 1;
         if (dp->d_type == DT_DIR) // si c'est un répertoire (DT_DIR est le type répertoire)
         {
@@ -307,8 +309,9 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate)
                 continue;
             snprintf(path, sizeof(path), "%s/%s", name, dp->d_name); // on concatène le chemin du répertoire courant avec le nom du répertoire
 
-            if (FLAG_NOOPTION==1){
-                printf("%s/%s\n",name,dp->d_name);
+            if (FLAG_NOOPTION == 1)
+            {
+                printf("%s/%s\n", name, dp->d_name);
             }
             // on affiche le nom du répertoire
             listdir(path, valsize, valname, valdate); // on appelle la fonction récursivement
@@ -370,22 +373,24 @@ int main(int argc, char *argv[])
     }
     else
     {
-        while (argv[i] != '\0')
+        while (argv[i] != NULL)
         {
 
             if (strcmp(argv[i], "-test") == 0)
             {
-                FLAG_TEST =1;
-                if (strcmp(argv[i+1],"-test")!=0 && strcmp(argv[i+1],"-name")!=0 && strcmp(argv[i+1],"-size")!=0 && strcmp(argv[i+1],"-date")!=0 && strcmp(argv[i+1],"-mime")!=0 && strcmp(argv[i+1],"-ctc")!=0 && strcmp(argv[i+1],"-dir")!=0 && strcmp(argv[i+1],"-color")!=0 && strcmp(argv[i+1],"-perm")!=0 && strcmp(argv[i+1],"-link")!=0 && strcmp(argv[i+1],"-threads")!=0 && strcmp(argv[i+1],"-ou")!=0){
-                    printf("Le flag %s n'est pas correct\n",argv[i+1]);
+                FLAG_TEST = 1;
+                if (strcmp(argv[i + 1], "-test") != 0 && strcmp(argv[i + 1], "-name") != 0 && strcmp(argv[i + 1], "-size") != 0 && strcmp(argv[i + 1], "-date") != 0 && strcmp(argv[i + 1], "-mime") != 0 && strcmp(argv[i + 1], "-ctc") != 0 && strcmp(argv[i + 1], "-dir") != 0 && strcmp(argv[i + 1], "-color") != 0 && strcmp(argv[i + 1], "-perm") != 0 && strcmp(argv[i + 1], "-link") != 0 && strcmp(argv[i + 1], "-threads") != 0 && strcmp(argv[i + 1], "-ou") != 0)
+                {
+                    printf("Le flag %s n'est pas correct\n", argv[i + 1]);
                 }
-                else if (argv[i+1] == '\0'){
-                    printf("Le flag %s n'est pas correct\n",argv[i+1]);
+                else if (argv[i + 1] == '\0')
+                {
+                    printf("Le flag %s n'est pas correct\n", argv[i + 1]);
                 }
-                else{
+                else
+                {
                     printf("La valeur du flag %s est %s\n", argv[i + 1], argv[i + 2]);
                 }
-                
             };
             if (strcmp(argv[i], "-size") == 0)
             {
@@ -397,6 +402,7 @@ int main(int argc, char *argv[])
                 FLAG_NAME = 1;
                 valname = argv[i + 1];
             }
+
             if (strcmp(argv[i], "-date") == 0)
             {
                 FLAG_DATE = 1;
@@ -410,12 +416,15 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (FLAG_TEST == 0){
-        listdir(argv[1], valsize, valname, valdate);
+    if (FLAG_TEST == 0)
+    {
+        STARTING_POINT=argv[1];
+        if (STARTING_POINT[strlen(STARTING_POINT)-1]=='/'){
+            STARTING_POINT[strlen(STARTING_POINT)-1]='\0';
+        }
+        listdir(STARTING_POINT, valsize, valname, valdate);
     }
-    
- 
-   
+
     return 0;
 }
 
