@@ -411,7 +411,6 @@ int main(int argc, char *argv[])
     }
 
     if (FLAG_TEST == 0){
-        printf("Ca rentre");
         listdir(argv[1], valsize, valname, valdate);
     }
     
