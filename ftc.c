@@ -374,7 +374,16 @@ int main(int argc, char *argv[])
             if (strcmp(argv[i], "-test") == 0)
             {
                 FLAG_TEST =1;
-                printf("La valeur du flag %s est %s.\n", argv[i + 1], argv[i + 2]);
+                if (strcmp(argv[i+1],"-test")!=0 && strcmp(argv[i+1],"-name")!=0 && strcmp(argv[i+1],"-size")!=0 && strcmp(argv[i+1],"-date")!=0 && strcmp(argv[i+1],"-mime")!=0 && strcmp(argv[i+1],"-ctc")!=0 && strcmp(argv[i+1],"-dir")!=0 && strcmp(argv[i+1],"-color")!=0 && strcmp(argv[i+1],"-perm")!=0 && strcmp(argv[i+1],"-link")!=0 && strcmp(argv[i+1],"-threads")!=0 && strcmp(argv[i+1],"-ou")!=0){
+                    printf("Le flag %s n'est pas correct\n",argv[i+1]);
+                }
+                else if (argv[i+1] == '\0'){
+                    printf("Le flag %s n'est pas correct\n",argv[i]);
+                }
+                else{
+                    printf("La valeur du flag %s est %s\n", argv[i + 1], argv[i + 2]);
+                }
+                
             };
             if (strcmp(argv[i], "-size") == 0)
             {
