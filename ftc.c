@@ -378,7 +378,7 @@ int main(int argc, char *argv[])
                     printf("Le flag %s n'est pas correct\n",argv[i+1]);
                 }
                 else if (argv[i+1] == '\0'){
-                    printf("Le flag %s n'est pas correct\n",argv[i]);
+                    printf("Le flag %s n'est pas correct\n",argv[i+1]);
                 }
                 else{
                     printf("La valeur du flag %s est %s\n", argv[i + 1], argv[i + 2]);
@@ -412,7 +412,7 @@ int main(int argc, char *argv[])
         listdir(argv[1], valsize, valname, valdate);
     }
     
-
+ 
    
     return 0;
 }
