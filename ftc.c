@@ -5,6 +5,7 @@ int FLAG_SIZE = 0;
 int FLAG_NAME = 0;
 int FLAG_DATE = 0;
 int FLAG_MIME = 0;
+bool FLAG_MIMESLASH = false;
 int FLAG_NOOPTION = 0;
 int FLAG_TEST = 0;
 char *STARTING_POINT;
@@ -283,15 +284,15 @@ bool compar_name(char *nom, char *fichier)
 bool compar_mime(char *valmime, char *fichier)
 {
     char **extensions = getMegaMimeExtensions(valmime);
-    //stop if extensions is null
+    // stop if extensions is null
     if (extensions == NULL)
         return false;
-    //get extension of fichier
+    // get extension of fichier
     char *ext = strrchr(fichier, '.');
     for (int i = 0; extensions[i] != NULL; i++)
     {
-        //printf("%s %s\n", ext,extensions[i]+1);
-        if (strcmp(extensions[i]+1, ext) == 0)
+        // printf("%s %s\n", ext,extensions[i]+1);
+        if (strcmp(extensions[i] + 1, ext) == 0)
         {
             freeMegaStringArray(extensions);
             return true;
@@ -330,7 +331,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
         }
         else // si c'est un fichier
         {
-            
+
             char *temp[1024];
             snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
 
@@ -360,24 +361,33 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
             }
             if (FLAG_MIME == 1)
             {
-                
-                //get the last character of a char**
+
+                // get the last character of a char**
                 char *last = valmime + strlen(valmime) - 1;
-                //if the last character is a slash, add a star
-                if (*last == '/')
+
+                // boolean test if there is a / in a char**
+
+                // if the last character is a slash, add a star
+                if (!FLAG_MIMESLASH)
                 {
-                    strcat(valmime, "*");
+                    // if the last character is neither a slash or a star, add slash and star
+                    if (*last != '*')
+                    {
+                        strcat(valmime, "/*");
+                    }
                 }
-                //if the last character is neither a slash or a star, add slash and star
-                else if (*last != '*')
-                {
-                    strcat(valmime, "/*");
+                else{
+                    if (*last == '/')
+                    {
+                        strcat(valmime, "*");
+                    }
                 }
+
                 if (valmime != NULL)
                 {
                     if (compar_mime(valmime, temp) == false)
                     {
-                        
+
                         test_valide = 0;
                     }
                 }
@@ -447,9 +457,17 @@ int main(int argc, char *argv[])
             }
             if (strcmp(argv[i], "-mime") == 0)
             {
-                
+
                 FLAG_MIME = 1;
                 valmime = argv[i + 1];
+
+                for (int i = 0; i < strlen(valmime); i++)
+                {
+                    if (valmime[i] == '/')
+                    {
+                        FLAG_MIMESLASH = true;
+                    }
+                }
             }
             i++;
         }
