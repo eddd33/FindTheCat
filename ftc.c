@@ -292,6 +292,11 @@ bool compar_mime(char *valmime, char *fichier)
         return false;
     // get extension of fichier
     char *ext = strrchr(fichier, '.');
+    if (ext == NULL)
+    {
+        freeMegaStringArray(extensions);
+        return false;
+    }
     for (int i = 0; extensions[i] != NULL; i++)
     {
         // printf("%s %s\n", ext,extensions[i]+1);
