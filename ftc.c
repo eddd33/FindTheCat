@@ -7,7 +7,7 @@ int FLAG_DATE = 0;
 int FLAG_MIME = 0;
 int FLAG_NOOPTION = 0;
 int FLAG_TEST = 0;
-char* STARTING_POINT;
+char *STARTING_POINT;
 
 // q5
 bool dernier_acces(char *nom, char *fichier)
@@ -280,24 +280,29 @@ bool compar_name(char *nom, char *fichier)
     }
 }
 
-bool compar_mime(char* valmime, char* fichier){
-    char** extensions = getMegaMimeExtensions(valmime);
-    //printf("what?%s\n",extensions);
-    int e = 0;
-    while (extensions[e] != NULL){
-       
-        if (compar_name(extensions[e],fichier) == true){
+bool compar_mime(char *valmime, char *fichier)
+{
+    char **extensions = getMegaMimeExtensions(valmime);
+    //stop if extensions is null
+    if (extensions == NULL)
+        return false;
+    //get extension of fichier
+    char *ext = strrchr(fichier, '.');
+    for (int i = 0; extensions[i] != NULL; i++)
+    {
+        //printf("%s %s\n", ext,extensions[i]+1);
+        if (strcmp(extensions[i]+1, ext) == 0)
+        {
             freeMegaStringArray(extensions);
             return true;
         }
-        e++;
     }
 
+    // returns {'*.mp4', NULL}
     freeMegaStringArray(extensions);
     return false;
 }
-
-void listdir(const char *name, char *valsize, char *valname, char *valdate, char* valmime)
+void listdir(const char *name, char *valsize, char *valname, char *valdate, char *valmime)
 {
     DIR *dirp;         // pointeur de répertoire
     struct dirent *dp; // pointeur de fichier
@@ -307,7 +312,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
 
     while ((dp = readdir(dirp)) != NULL) // tant qu'il y a des fichiers
     {
-        
+
         int test_valide = 1;
         if (dp->d_type == DT_DIR) // si c'est un répertoire (DT_DIR est le type répertoire)
         {
@@ -325,11 +330,13 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
         }
         else // si c'est un fichier
         {
+            
+            char *temp[1024];
+            snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
 
             if (FLAG_SIZE == 1)
             {
-                char *temp[1024];
-                snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
+
                 if (compar_size(valsize, temp) == false)
                 {
                     test_valide = 0;
@@ -345,16 +352,34 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
             }
             if (FLAG_DATE == 1)
             {
-                char *temp[1024];
-                snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
+
                 if (dernier_acces(valdate, temp) == false)
                 {
                     test_valide = 0;
                 }
             }
-            if (FLAG_MIME == 1){
-                if (compar_mime(valmime, dp->d_name) == false){
-                    test_valide=0;
+            if (FLAG_MIME == 1)
+            {
+                
+                //get the last character of a char**
+                char *last = valmime + strlen(valmime) - 1;
+                //if the last character is a slash, add a star
+                if (*last == '/')
+                {
+                    strcat(valmime, "*");
+                }
+                //if the last character is neither a slash or a star, add slash and star
+                else if (*last != '*')
+                {
+                    strcat(valmime, "/*");
+                }
+                if (valmime != NULL)
+                {
+                    if (compar_mime(valmime, temp) == false)
+                    {
+                        
+                        test_valide = 0;
+                    }
                 }
             }
 
@@ -422,8 +447,9 @@ int main(int argc, char *argv[])
             }
             if (strcmp(argv[i], "-mime") == 0)
             {
+                
                 FLAG_MIME = 1;
-                valmime = argv[i+1];
+                valmime = argv[i + 1];
             }
             i++;
         }
@@ -431,9 +457,10 @@ int main(int argc, char *argv[])
 
     if (FLAG_TEST == 0)
     {
-        STARTING_POINT=argv[1];
-        if (STARTING_POINT[strlen(STARTING_POINT)-1]=='/'){
-            STARTING_POINT[strlen(STARTING_POINT)-1]='\0';
+        STARTING_POINT = argv[1];
+        if (STARTING_POINT[strlen(STARTING_POINT) - 1] == '/')
+        {
+            STARTING_POINT[strlen(STARTING_POINT) - 1] = '\0';
         }
         listdir(STARTING_POINT, valsize, valname, valdate, valmime);
     }
