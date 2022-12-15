@@ -8,7 +8,8 @@ int FLAG_MIME = 0;
 bool FLAG_MIMESLASH = false;
 int FLAG_NOOPTION = 0;
 int FLAG_TEST = 0;
-int FLAG_CTC = 0;
+int FLAG_DIR = 0;
+int FLAG_DIROPTION = 0;
 char *STARTING_POINT;
 
 // q5
@@ -304,36 +305,7 @@ bool compar_mime(char *valmime, char *fichier)
     freeMegaStringArray(extensions);
     return false;
 }
-
-//q8
-bool lecture(char* valctc, char *fichier)
-{
-    //printf("direction %s\n", fichier);
-    FILE *f = fopen(fichier, "r");
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-
-    if (f == NULL){
-        return false;
-    }
-            //chorizo
-    while ((read = getline(&line, &len, f)) != -1) // tant qu'il y a des lignes
-    //getline lit une ligne dans le fichier puis la stocke dans line 
-    {
-        if (compar_name(valctc, line) == true){ // si la ligne contient le mot recherché
-            return true;
-        }
-        //printf("%s", line);
-    }
-
-    fclose(f);
-    if (line) // si la ligne n'est pas vide
-        free(line); // libère la mémoire
-    return false;
-}
-
-void listdir(const char *name, char *valsize, char *valname, char *valdate, char *valmime, char* valctc)
+void listdir(const char *name, char *valsize, char *valname, char *valdate, char *valmime, char *valdir)
 {
     DIR *dirp;         // pointeur de répertoire
     struct dirent *dp; // pointeur de fichier
@@ -350,91 +322,117 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
             char path[1024];                                                   // création d'un chemin
             if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0) // si c'est le répertoire courant ou le répertoire parent
                 continue;
+
             snprintf(path, sizeof(path), "%s/%s", name, dp->d_name); // on concatène le chemin du répertoire courant avec le nom du répertoire
+
+            if (FLAG_DIR == 1)
+            {
+                if (FLAG_DIROPTION == 1)
+                {
+                    //récupere dans un chemin en char* le dernier dossier
+                    char *temp[1024];   
+                    snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
+                    char *dossier = strrchr(temp, '/');
+                    dossier = dossier + 1;
+                    if (compar_name(valdir, dossier) == true)
+                    {
+                        printf("%s\n", path);
+                        continue;
+                    }
+
+                    
+                }
+                else
+                {
+                 
+                    printf("%s\n", path);
+                    
+                }
+            }
+
+            
 
             if (FLAG_NOOPTION == 1)
             {
                 printf("%s/%s\n", name, dp->d_name);
             }
+
+
+            
             // on affiche le nom du répertoire
-            listdir(path, valsize, valname, valdate, valmime, valctc); // on appelle la fonction récursivement
+            listdir(path, valsize, valname, valdate, valmime, valdir); // on appelle la fonction récursivement
         }
         else // si c'est un fichier
         {
-
-            char *temp[1024];
-            snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
-
-            if (FLAG_SIZE == 1)
+            if (FLAG_DIR == 0)
             {
+                char *temp[1024];
+                snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
 
-                if (compar_size(valsize, temp) == false)
+                if (FLAG_SIZE == 1)
                 {
-                    test_valide = 0;
-                }
-            }
-            if (FLAG_NAME == 1)
-            {
 
-                if (compar_name(valname, dp->d_name) == false)
-                {
-                    test_valide = 0;
-                }
-            }
-            if (FLAG_DATE == 1)
-            {
-
-                if (dernier_acces(valdate, temp) == false)
-                {
-                    test_valide = 0;
-                }
-            }
-            if (FLAG_MIME == 1)
-            {
-
-                // get the last character of a char**
-                char *last = valmime + strlen(valmime) - 1;
-
-                // boolean test if there is a / in a char**
-
-                // if the last character is a slash, add a star
-                if (!FLAG_MIMESLASH)
-                {
-                    // if the last character is neither a slash or a star, add slash and star
-                    if (*last != '*')
+                    if (compar_size(valsize, temp) == false)
                     {
-                        strcat(valmime, "/*");
-                    }
-                }
-                else{
-                    if (*last == '/')
-                    {
-                        strcat(valmime, "*");
-                    }
-                }
-
-                if (valmime != NULL)
-                {
-                    if (compar_mime(valmime, temp) == false)
-                    {
-
                         test_valide = 0;
                     }
                 }
-            }
-            if (FLAG_CTC == 1){
-                char *temp[1024];
-                snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
-                if (lecture(valctc, temp) == false)
+                if (FLAG_NAME == 1)
                 {
-                    test_valide=0;
+
+                    if (compar_name(valname, dp->d_name) == false)
+                    {
+                        test_valide = 0;
+                    }
                 }
-            }
+                if (FLAG_DATE == 1)
+                {
 
-            if (test_valide == 1)
-            {
+                    if (dernier_acces(valdate, temp) == false)
+                    {
+                        test_valide = 0;
+                    }
+                }
+                if (FLAG_MIME == 1)
+                {
 
-                printf("%s/%s\n", name, dp->d_name); // on affiche le nom du fichier
+                    // get the last character of a char**
+                    char *last = valmime + strlen(valmime) - 1;
+
+                    // boolean test if there is a / in a char**
+
+                    // if the last character is a slash, add a star
+                    if (!FLAG_MIMESLASH)
+                    {
+                        // if the last character is neither a slash or a star, add slash and star
+                        if (*last != '*')
+                        {
+                            strcat(valmime, "/*");
+                        }
+                    }
+                    else
+                    {
+                        if (*last == '/')
+                        {
+                            strcat(valmime, "*");
+                        }
+                    }
+
+                    if (valmime != NULL)
+                    {
+                        if (compar_mime(valmime, temp) == false)
+                        {
+
+                            test_valide = 0;
+                        }
+                    }
+                }
+
+                if (test_valide == 1)
+                {
+
+                    printf("%s/%s\n", name, dp->d_name); // on affiche le nom du fichier
+                }
             }
         }
     }
@@ -449,7 +447,7 @@ int main(int argc, char *argv[])
     char *valname = "ini";
     char *valdate = "ini";
     char *valmime = "ini";
-    char *valctc = "ini";
+    char *valdir = "ini";
     int i = 0;
 
     if (argv[2] == '\0')
@@ -508,9 +506,19 @@ int main(int argc, char *argv[])
                     }
                 }
             }
-            if (strcmp(argv[i], "-ctc") == 0){
-                FLAG_CTC = 1;
-                valctc = argv[i + 1];
+
+            if (strcmp(argv[i], "-dir") == 0)
+            {
+                FLAG_DIR = 1;
+                valdir = argv[i + 1];
+                //get the first letter of a char*
+                if (valdir!=NULL){
+                    char first = valdir[0];
+                    if (first!='-'){
+                        FLAG_DIROPTION=1;
+                    }
+                }
+                
             }
             i++;
         }
@@ -523,10 +531,8 @@ int main(int argc, char *argv[])
         {
             STARTING_POINT[strlen(STARTING_POINT) - 1] = '\0';
         }
-        listdir(STARTING_POINT, valsize, valname, valdate, valmime, valctc);
+        listdir(STARTING_POINT, valsize, valname, valdate, valmime, valdir);
     }
 
     return 0;
 }
-
-// how to get the mime type
