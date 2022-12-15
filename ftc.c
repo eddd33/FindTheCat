@@ -331,6 +331,9 @@ bool lecture(char *nom, char *fichier)
             fclose(f);
             return true;
         }
+        if (compar_name(nom, line)){
+            return true;
+        }
     }
     free(line);
     fclose(f);
