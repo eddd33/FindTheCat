@@ -12,16 +12,25 @@ LDFLAGS+=-fsanitize=address
 ##### FILES TO COMPILE #####
 ############################
 
+
+
 # Program:
-ftc: ftc.o MegaMimes.o
+ftc: 
+	$(CC) $(CFLAGS) -o ftc src/ftc.c src/MegaMimes.c
+
+
 
 # Format is:
 ## program_name: file_name1.o file_name2.o
 
+#compile .c and .h file from src to root
+
+
+
 
 # Object files
-ftc.o:  ftc.c ftc.h MegaMimes.h
-MegaMimes.o : MegaMimes.c MegaMimes.h
+ftc.o:  src/ftc.c src/ftc.h src/MegaMimes.h
+MegaMimes.o : src/MegaMimes.c src/MegaMimes.h
 # Format is:
 ## file_name.o: <dependency.o> <header_file.h> file_name.c
 
@@ -31,7 +40,7 @@ MegaMimes.o : MegaMimes.c MegaMimes.h
 ##########################
 
 clean:
-	rm -f *.o *_test
+	rm -f *.o *_test ftc
 
 # For the test, replace `solveur_main_test` with your program name.
 
