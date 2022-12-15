@@ -11,12 +11,13 @@ int FLAG_TEST = 0;
 int FLAG_CTC = 0;
 int FLAG_DIR = 0;
 int FLAG_DIROPTION = 0;
+int FLAG_OU=0;
 char *STARTING_POINT;
 
 // q5
 bool dernier_acces(char *nom, char *fichier)
 {
-    char signe;
+    char signe = '.'; //on initialise signe
     char unit = nom[strlen(nom) - 1];
     char *tamp;
     if (nom[0] == '+')
@@ -118,8 +119,10 @@ unsigned long taille(char *fichier)
 bool compar_size(char *nom, char *fichier)
 {
 
-    char signe;
+    char signe ='.'; // on initialise signe
     char unit = nom[strlen(nom) - 1];
+    
+
     char *tamp;
 
     if (nom[0] == '+' || nom[0] == '-')
@@ -130,16 +133,19 @@ bool compar_size(char *nom, char *fichier)
 
         tamp[strlen(nom) - 2] = '\0';
     }
-    else
+    else if (unit=='c' || unit=='k' || unit=='M' || unit=='G')
     {
         tamp = strdup(nom);
         tamp[strlen(nom) - 1] = '\0';
+    }
+    else{
+        tamp = strdup(nom);
     }
 
     unsigned long target = atoi(tamp);
     if (signe == '+')
     {
-        if (unit == 'c')
+        if (unit!='k' && unit!='M' && unit!='G')
         {
             if (target < taille(fichier))
             {
@@ -179,7 +185,7 @@ bool compar_size(char *nom, char *fichier)
     }
     else if (signe == '-')
     {
-        if (unit == 'c')
+        if (unit!='k' && unit!='M' && unit!='G')
         {
             if (target > taille(fichier))
             {
@@ -219,7 +225,7 @@ bool compar_size(char *nom, char *fichier)
     }
     else
     {
-        if (unit == 'c')
+        if (unit!='k' && unit!='M' && unit!='G')
         {
             if (target == taille(fichier))
             {
@@ -352,6 +358,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
     {
 
         int test_valide = 1;
+        int test_ouvalide=0;
         if (dp->d_type == DT_DIR) // si c'est un répertoire (DT_DIR est le type répertoire)
         {
             char path[1024];                                                   // création d'un chemin
@@ -365,7 +372,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                 if (FLAG_DIROPTION == 1)
                 {
                     //récupere dans un chemin en char* le dernier dossier
-                    char *temp[1024];   
+                    char *temp[1024]; // on initialise temp   
                     snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
                     char *dossier = strrchr(temp, '/');
                     dossier = dossier + 1;
@@ -401,7 +408,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
         {
             if (FLAG_DIR == 0)
             {
-                char *temp[1024];
+                char *temp[1024]; //initialisation
                 snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
 
                 if (FLAG_SIZE == 1)
@@ -411,6 +418,9 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                     {
                         test_valide = 0;
                     }
+                    else{
+                        test_ouvalide=1;
+                    }
                 }
                 if (FLAG_NAME == 1)
                 {
@@ -418,6 +428,9 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                     if (compar_name(valname, dp->d_name) == false)
                     {
                         test_valide = 0;
+                    }
+                    else{
+                        test_ouvalide=1;
                     }
                 }
                 if (FLAG_DATE == 1)
@@ -461,6 +474,9 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                             test_valide = 0;
                         }
                     }
+                    else{
+                        test_ouvalide=1;
+                    }
                 }
                 if (FLAG_CTC == 1)
                 {
@@ -469,13 +485,24 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                     {
                         test_valide = 0;
                     }
+                    else{
+                        test_ouvalide=1;
+                    }
                 }
 
-                if (test_valide == 1)
-                {
-
-                    printf("%s/%s\n", name, dp->d_name); // on affiche le nom du fichier
+                if (FLAG_OU == 1){
+                    if (test_ouvalide==1){
+                        printf("%s/%s\n", name, dp->d_name); // on affiche le nom du fichier
+                    }
                 }
+
+                else{
+                    if (test_valide == 1)
+                    {
+
+                        printf("%s/%s\n", name, dp->d_name); // on affiche le nom du fichier
+                    }
+                } 
             }
         }
     }
@@ -523,23 +550,39 @@ int main(int argc, char *argv[])
             if (strcmp(argv[i], "-size") == 0)
             {
                 FLAG_SIZE = 1;
+                if (argv[i + 1] == NULL){
+                    fprintf(stderr, "Pas de paramètre indiqué après -size.\n");
+                    exit(0);
+                }
                 valsize = argv[i + 1];
             };
             if (strcmp(argv[i], "-name") == 0)
             {
                 FLAG_NAME = 1;
+                if (argv[i + 1] == NULL){
+                    fprintf(stderr, "Pas de paramètre indiqué après -name.\n");
+                    exit(0);
+                }
                 valname = argv[i + 1];
             }
 
             if (strcmp(argv[i], "-date") == 0)
             {
                 FLAG_DATE = 1;
+                if (argv[i + 1] == NULL){
+                    fprintf(stderr, "Pas de paramètre indiqué après -date.\n");
+                    exit(0);
+                }
                 valdate = argv[i + 1];
             }
             if (strcmp(argv[i], "-mime") == 0)
             {
 
                 FLAG_MIME = 1;
+                if (argv[i + 1] == NULL){
+                    fprintf(stderr, "Pas de paramètre indiqué après -mime.\n");
+                    exit(0);
+                }
                 valmime = argv[i + 1];
 
                 for (int i = 0; i < strlen(valmime); i++)
@@ -554,12 +597,20 @@ int main(int argc, char *argv[])
             if (strcmp(argv[i], "-ctc") == 0)
             {
                 FLAG_CTC = 1;
+                if (argv[i + 1] == NULL){
+                    fprintf(stderr, "Pas de paramètre indiqué après -ctc.\n");
+                    exit(0);
+                }
                 valctc = argv[i + 1];
             }
 
             if (strcmp(argv[i], "-dir") == 0)
             {
                 FLAG_DIR = 1;
+                if (argv[i + 1] == NULL){
+                    fprintf(stderr, "Pas de parametre indique apres -dir\n");
+                    exit(0);
+                }
                 valdir = argv[i + 1];
                 //get the first letter of a char*
                 if (valdir!=NULL){
@@ -570,19 +621,29 @@ int main(int argc, char *argv[])
                 }
                 
             }
+            if (strcmp(argv[i],"-ou")==0){
+                FLAG_OU=1;
+            }
+
+
             i++;
         }
     }
 
     if (FLAG_TEST == 0)
     {
+        if (argv[1] == NULL){
+            fprintf(stderr,"Pas de point de départ indiqué\n");
+            exit(0);
+        }
         STARTING_POINT = argv[1];
+        
         if (STARTING_POINT[strlen(STARTING_POINT) - 1] == '/')
         {
             STARTING_POINT[strlen(STARTING_POINT) - 1] = '\0';
         }
         listdir(STARTING_POINT, valsize, valname, valdate, valmime, valctc, valdir);
     }
-    //jesus
+    
     return 0;
 }
