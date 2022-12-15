@@ -8,6 +8,7 @@ int FLAG_MIME = 0;
 bool FLAG_MIMESLASH = false;
 int FLAG_NOOPTION = 0;
 int FLAG_TEST = 0;
+int FLAG_CTC = 0;
 int FLAG_DIR = 0;
 int FLAG_DIROPTION = 0;
 char *STARTING_POINT;
@@ -305,7 +306,33 @@ bool compar_mime(char *valmime, char *fichier)
     freeMegaStringArray(extensions);
     return false;
 }
-void listdir(const char *name, char *valsize, char *valname, char *valdate, char *valmime, char *valdir)
+
+//q8
+
+
+bool lecture(char *nom, char *fichier)
+{
+    FILE *f = fopen(fichier, "r");
+    if (f == NULL)
+        return false;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    while ((read = getline(&line, &len, f)) != -1)
+    {
+        if (strstr(line, nom) != NULL)
+        {
+            free(line);
+            fclose(f);
+            return true;
+        }
+    }
+    free(line);
+    fclose(f);
+    return false;
+}
+
+void listdir(const char *name, char *valsize, char *valname, char *valdate, char *valmime, char *valctc, char *valdir)
 {
     DIR *dirp;         // pointeur de répertoire
     struct dirent *dp; // pointeur de fichier
@@ -360,7 +387,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
 
             
             // on affiche le nom du répertoire
-            listdir(path, valsize, valname, valdate, valmime, valdir); // on appelle la fonction récursivement
+            listdir(path, valsize, valname, valdate, valmime, valctc, valdir); // on appelle la fonction récursivement
         }
         else // si c'est un fichier
         {
@@ -427,6 +454,14 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                         }
                     }
                 }
+                if (FLAG_CTC == 1)
+                {
+
+                    if (lecture(valctc, temp) == false)
+                    {
+                        test_valide = 0;
+                    }
+                }
 
                 if (test_valide == 1)
                 {
@@ -447,6 +482,7 @@ int main(int argc, char *argv[])
     char *valname = "ini";
     char *valdate = "ini";
     char *valmime = "ini";
+    char *valctc = "ini";
     char *valdir = "ini";
     int i = 0;
 
@@ -507,6 +543,12 @@ int main(int argc, char *argv[])
                 }
             }
 
+            if (strcmp(argv[i], "-ctc") == 0)
+            {
+                FLAG_CTC = 1;
+                valctc = argv[i + 1];
+            }
+
             if (strcmp(argv[i], "-dir") == 0)
             {
                 FLAG_DIR = 1;
@@ -531,8 +573,8 @@ int main(int argc, char *argv[])
         {
             STARTING_POINT[strlen(STARTING_POINT) - 1] = '\0';
         }
-        listdir(STARTING_POINT, valsize, valname, valdate, valmime, valdir);
+        listdir(STARTING_POINT, valsize, valname, valdate, valmime, valctc, valdir);
     }
-
+    //jesus
     return 0;
 }
