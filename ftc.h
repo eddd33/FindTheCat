@@ -21,7 +21,8 @@ unsigned long taille(char *nom);
 bool compar_size(char *nom, char *fichier);
 bool compar_name(char* nom, char* fichier);
 bool compar_mime(char* valmime, char* fichier);
-void listdir(const char *name, char *valsize, char *valname, char *valdate, char* valmime);
+bool lecture(char* valctc, char *fichier);
+void listdir(const char *name, char *valsize, char *valname, char *valdate, char* valmime, char* valctc);
 int main(int argc, char *argv[]);
 
 #endif

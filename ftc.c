@@ -7,6 +7,7 @@ int FLAG_DATE = 0;
 int FLAG_MIME = 0;
 int FLAG_NOOPTION = 0;
 int FLAG_TEST = 0;
+int FLAG_CTC = 0;
 char* STARTING_POINT;
 
 // q5
@@ -297,7 +298,36 @@ bool compar_mime(char* valmime, char* fichier){
     return false;
 }
 
-void listdir(const char *name, char *valsize, char *valname, char *valdate, char* valmime)
+//q8
+bool lecture(char* valctc, char *fichier)
+{
+    //printf("direction %s\n", fichier);
+    FILE *f = fopen(fichier, "r");
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    if (f == NULL){
+        return false;
+    }
+        
+    //chorizo
+    while ((read = getline(&line, &len, f)) != -1) // tant qu'il y a des lignes
+    //getline lit une ligne dans le fichier puis la stocke dans line 
+    {
+        if (compar_name(valctc, line) == true){ // si la ligne contient le mot recherché
+            return true;
+        }
+        //printf("%s", line);
+    }
+
+    fclose(f);
+    if (line) // si la ligne n'est pas vide
+        free(line); // libère la mémoire
+    return false;
+}
+
+void listdir(const char *name, char *valsize, char *valname, char *valdate, char* valmime, char* valctc)
 {
     DIR *dirp;         // pointeur de répertoire
     struct dirent *dp; // pointeur de fichier
@@ -321,7 +351,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                 printf("%s/%s\n", name, dp->d_name);
             }
             // on affiche le nom du répertoire
-            listdir(path, valsize, valname, valdate, valmime); // on appelle la fonction récursivement
+            listdir(path, valsize, valname, valdate, valmime, valctc); // on appelle la fonction récursivement
         }
         else // si c'est un fichier
         {
@@ -357,6 +387,14 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                     test_valide=0;
                 }
             }
+            if (FLAG_CTC == 1){
+                char *temp[1024];
+                snprintf(temp, sizeof(temp), "%s/%s", name, dp->d_name);
+                if (lecture(valctc, temp) == false)
+                {
+                    test_valide=0;
+                }
+            }
 
             if (test_valide == 1)
             {
@@ -376,6 +414,7 @@ int main(int argc, char *argv[])
     char *valname = "ini";
     char *valdate = "ini";
     char *valmime = "ini";
+    char *valctc = "ini";
     int i = 0;
 
     if (argv[2] == '\0')
@@ -425,6 +464,10 @@ int main(int argc, char *argv[])
                 FLAG_MIME = 1;
                 valmime = argv[i+1];
             }
+            if (strcmp(argv[i], "-ctc") == 0){
+                FLAG_CTC = 1;
+                valctc = argv[i + 1];
+            }
             i++;
         }
     }
@@ -435,7 +478,7 @@ int main(int argc, char *argv[])
         if (STARTING_POINT[strlen(STARTING_POINT)-1]=='/'){
             STARTING_POINT[strlen(STARTING_POINT)-1]='\0';
         }
-        listdir(STARTING_POINT, valsize, valname, valdate, valmime);
+        listdir(STARTING_POINT, valsize, valname, valdate, valmime, valctc);
     }
 
     return 0;
