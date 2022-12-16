@@ -1,7 +1,5 @@
 #include "ftc.h"
 #include "MegaMimes.h"
-#define ROUGE "\033[00;31m"
-#define NORMAL "\033[00m"
 
 int FLAG_SIZE = 0;
 int FLAG_NAME = 0;
@@ -384,25 +382,16 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                         printf("%s\n", path);
                         continue;
                     }
-
-                    
                 }
                 else
                 {
-                 
                     printf("%s\n", path);
-                    
                 }
             }
-
-            
-
             if (FLAG_NOOPTION == 1)
             {
                 printf("%s/%s\n", name, dp->d_name);
             }
-
-
             
             // on affiche le nom du répertoire
             listdir(path, valsize, valname, valdate, valmime, valctc, valdir); // on appelle la fonction récursivement
@@ -494,8 +483,11 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                 }
 
                 if (FLAG_OU == 1){
-                    if (test_ouvalide==1){
+                    if (test_ouvalide==1 && FLAG_COLOR == 0){
                         printf("%s/%s\n", name, dp->d_name); // on affiche le nom du fichier
+                    }
+                    else if (test_ouvalide==1 && FLAG_COLOR == 1){
+                        printf("\033[00;32m%s/\033[00;31m%s\033[00m\n", name, dp->d_name); // on affiche le nom du fichier
                     }
                 }
 
@@ -557,16 +549,17 @@ int main(int argc, char *argv[])
             if (strcmp(argv[i], "-size") == 0)
             {
                 FLAG_SIZE = 1;
-                if (argv[i + 1] == NULL){
+                if (argv[i + 1] == NULL || strcmp(argv[i + 1], "-test") == 0 || strcmp(argv[i + 1], "-name") == 0 || strcmp(argv[i + 1], "-size") == 0 || strcmp(argv[i + 1], "-date") == 0 || strcmp(argv[i + 1], "-mime") == 0 || strcmp(argv[i + 1], "-ctc") == 0 || strcmp(argv[i + 1], "-dir") == 0 || strcmp(argv[i + 1], "-color") == 0 || strcmp(argv[i + 1], "-ou") == 0){
                     fprintf(stderr, "Pas de paramètre indiqué après -size.\n");
                     exit(0);
                 }
+
                 valsize = argv[i + 1];
             };
             if (strcmp(argv[i], "-name") == 0)
             {
                 FLAG_NAME = 1;
-                if (argv[i + 1] == NULL){
+                if (argv[i + 1] == NULL || strcmp(argv[i + 1], "-test") == 0 || strcmp(argv[i + 1], "-name") == 0 || strcmp(argv[i + 1], "-size") == 0 || strcmp(argv[i + 1], "-date") == 0 || strcmp(argv[i + 1], "-mime") == 0 || strcmp(argv[i + 1], "-ctc") == 0 || strcmp(argv[i + 1], "-dir") == 0 || strcmp(argv[i + 1], "-color") == 0 || strcmp(argv[i + 1], "-ou") == 0){
                     fprintf(stderr, "Pas de paramètre indiqué après -name.\n");
                     exit(0);
                 }
@@ -576,7 +569,7 @@ int main(int argc, char *argv[])
             if (strcmp(argv[i], "-date") == 0)
             {
                 FLAG_DATE = 1;
-                if (argv[i + 1] == NULL){
+                if (argv[i + 1] == NULL || strcmp(argv[i + 1], "-test") == 0 || strcmp(argv[i + 1], "-name") == 0 || strcmp(argv[i + 1], "-size") == 0 || strcmp(argv[i + 1], "-date") == 0 || strcmp(argv[i + 1], "-mime") == 0 || strcmp(argv[i + 1], "-ctc") == 0 || strcmp(argv[i + 1], "-dir") == 0 || strcmp(argv[i + 1], "-color") == 0 || strcmp(argv[i + 1], "-ou") == 0){
                     fprintf(stderr, "Pas de paramètre indiqué après -date.\n");
                     exit(0);
                 }
@@ -586,7 +579,7 @@ int main(int argc, char *argv[])
             {
 
                 FLAG_MIME = 1;
-                if (argv[i + 1] == NULL){
+                if (argv[i + 1] == NULL || strcmp(argv[i + 1], "-test") == 0 || strcmp(argv[i + 1], "-name") == 0 || strcmp(argv[i + 1], "-size") == 0 || strcmp(argv[i + 1], "-date") == 0 || strcmp(argv[i + 1], "-mime") == 0 || strcmp(argv[i + 1], "-ctc") == 0 || strcmp(argv[i + 1], "-dir") == 0 || strcmp(argv[i + 1], "-color") == 0 || strcmp(argv[i + 1], "-ou") == 0){
                     fprintf(stderr, "Pas de paramètre indiqué après -mime.\n");
                     exit(0);
                 }
@@ -604,7 +597,7 @@ int main(int argc, char *argv[])
             if (strcmp(argv[i], "-ctc") == 0)
             {
                 FLAG_CTC = 1;
-                if (argv[i + 1] == NULL){
+                if (argv[i + 1] == NULL || strcmp(argv[i + 1], "-test") == 0 || strcmp(argv[i + 1], "-name") == 0 || strcmp(argv[i + 1], "-size") == 0 || strcmp(argv[i + 1], "-date") == 0 || strcmp(argv[i + 1], "-mime") == 0 || strcmp(argv[i + 1], "-ctc") == 0 || strcmp(argv[i + 1], "-dir") == 0 || strcmp(argv[i + 1], "-color") == 0 || strcmp(argv[i + 1], "-ou") == 0){
                     fprintf(stderr, "Pas de paramètre indiqué après -ctc.\n");
                     exit(0);
                 }
@@ -614,7 +607,7 @@ int main(int argc, char *argv[])
             if (strcmp(argv[i], "-dir") == 0)
             {
                 FLAG_DIR = 1;
-                if (argv[i + 1] == NULL){
+                if (argv[i + 1] == NULL || strcmp(argv[i + 1], "-test") == 0 || strcmp(argv[i + 1], "-name") == 0 || strcmp(argv[i + 1], "-size") == 0 || strcmp(argv[i + 1], "-date") == 0 || strcmp(argv[i + 1], "-mime") == 0 || strcmp(argv[i + 1], "-ctc") == 0 || strcmp(argv[i + 1], "-dir") == 0 || strcmp(argv[i + 1], "-color") == 0 || strcmp(argv[i + 1], "-ou") == 0){
                     fprintf(stderr, "Pas de parametre indique apres -dir\n");
                     exit(0);
                 }
