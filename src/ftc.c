@@ -16,83 +16,98 @@ int FLAG_COLOR=0;
 char *STARTING_POINT;
 
 // q5
-bool dernier_acces(char *nom, char *fichier)
-{
-    char signe = '.'; //on initialise signe
-    char unit = nom[strlen(nom) - 1];
-    char *tamp;
-    if (nom[0] == '+')
-    {
-        signe = nom[0];
-        tamp = strdup(nom);
-        tamp = tamp + 1;
-
-        tamp[strlen(nom) - 2] = '\0';
-    }
-    else
-    {
-        tamp = strdup(nom);
-        tamp[strlen(nom) - 1] = '\0';
-    }
-
+bool dernier_acces(char* nom, char* fichier){
     struct stat st;
     stat(fichier, &st);
-    time_t last = st.st_atime; // temps écoulé depuis le dernier accès
+    time_t last = st.st_atime; //temps écoulé depuis le dernier accès
 
-    time_t t = time(NULL); // time_t type donnant en secondes le temps écoulé depuis le 1er janvier 1970
+    time_t t = time(NULL);//time_t type donnant en secondes le temps écoulé depuis le 1er janvier 1970
 
-    double diff = difftime(t, last); // différence entre le temps actuel et le dernier accès
-    if (signe == '+')
-    {
-        if (unit == 'm')
-        {
-            if (diff > atoi(tamp) * 60)
-            {
-                free(tamp - 1);
-                return true;
-            }
+    double diff = difftime(t, last); //différence entre le temps actuel et le dernier accès
+
+    if (strcmp(nom, "now")==0){
+        if (diff<60){
+            return true;
         }
-        else if (unit == 'h')
-        {
-            if (diff > atoi(tamp) * 3600)
-            {
-                free(tamp - 1);
-                return true;
-            }
-        }
-        else if (unit == 'j')
-        {
-            if (diff > atoi(tamp) * 86400)
-            {
-                free(tamp - 1);
-                return true;
-            }
-        }
-        free(tamp - 1);
-        return false;
     }
+    if (strcmp(nom, "today")==0){
+        if (diff<86400){
+            return true;
+        }
+    }
+    if (strcmp(nom, "yesterday")==0){
+        if (diff<172800 && diff>86400){
+            return true;
+        }
+    }
+    if (strcmp(nom, "this month")==0){
+        if (diff<2678400){
+            return true;
+        }
+    }
+
+    char signe;
+    char unité = nom[strlen(nom)-1];
+    char *tamp;
+    if (nom[0]=='+')
+    {
+        signe = nom[0];
+        tamp=strdup(nom);
+        tamp=tamp+1;
+        
+        tamp[strlen(nom)-2]='\0';
+    }
+    // if(nom[0]=='-'){
+    //     printf(stderr, "Erreur: le signe - n'est pas supporté pour le -date\n");
+    //     exit(0);
+    // }
     else
     {
-        if (unit == 'm')
-        {
-            if (diff <= atoi(tamp) * 60)
-            {
+        tamp=strdup(nom);
+        tamp[strlen(nom)-1]='\0';
+    }
+
+    
+    if (signe == '+')
+    {
+        if(unité == 'm'){
+        if(diff > atoi(tamp)*60){
+            free(tamp-1);
+            return true;
+        }
+        }
+        else if(unité == 'h'){
+            if(diff > atoi(tamp)*3600){
+                free(tamp-1);
+                return true;
+            }
+        }
+        else if(unité == 'j'){
+            if(diff > atoi(tamp)*86400){
+                free(tamp-1);
+                return true;
+            }
+        }
+        free(tamp-1);
+        return false;
+    }
+    
+    else
+    {
+        if(unité == 'm'){
+        if(diff <= atoi(tamp)*60){
+            free(tamp);
+            return true;
+        }
+        }
+        else if(unité == 'h'){
+            if(diff <= atoi(tamp)*3600){
                 free(tamp);
                 return true;
             }
         }
-        else if (unit == 'h')
-        {
-            if (diff <= atoi(tamp) * 3600)
-            {
-                free(tamp);
-                return true;
-            }
-        }
-        else if (unit == 'j')
-        {
-            if (diff <= atoi(tamp) * 86400)
-            {
+        else if(unité == 'j'){
+            if(diff <= atoi(tamp)*86400){
                 free(tamp);
                 return true;
             }
@@ -100,10 +115,12 @@ bool dernier_acces(char *nom, char *fichier)
         free(tamp);
         return false;
     }
-
-    free(tamp - 1);
+    
+    
+    free(tamp-1);
     return false;
 }
+
 
 // q3
 unsigned long taille(char *fichier)
