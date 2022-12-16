@@ -1,5 +1,7 @@
 #include "ftc.h"
 #include "MegaMimes.h"
+#define ROUGE "\033[00;31m"
+#define NORMAL "\033[00m"
 
 int FLAG_SIZE = 0;
 int FLAG_NAME = 0;
@@ -12,6 +14,7 @@ int FLAG_CTC = 0;
 int FLAG_DIR = 0;
 int FLAG_DIROPTION = 0;
 int FLAG_OU=0;
+int FLAG_COLOR=0;
 char *STARTING_POINT;
 
 // q5
@@ -497,10 +500,13 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                 }
 
                 else{
-                    if (test_valide == 1)
+                    if (test_valide == 1 && FLAG_COLOR == 0)
                     {
-
                         printf("%s/%s\n", name, dp->d_name); // on affiche le nom du fichier
+                    }
+                    else if (test_valide == 1 && FLAG_COLOR == 1)
+                    {
+                        printf("\033[00;32m%s/\033[00;31m%s\033[00m\n", name, dp->d_name); // on affiche le nom du fichier
                     }
                 } 
             }
@@ -508,6 +514,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
     }
     closedir(dirp); // on ferme le répertoire
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -624,7 +631,10 @@ int main(int argc, char *argv[])
             if (strcmp(argv[i],"-ou")==0){
                 FLAG_OU=1;
             }
-
+            if (strcmp(argv[i], "-color") == 0)
+            {
+                FLAG_COLOR = 1;
+            }
 
             i++;
         }
