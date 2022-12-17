@@ -13,6 +13,7 @@ int FLAG_DIR = 0;
 int FLAG_DIROPTION = 0;
 int FLAG_OU=0;
 int FLAG_COLOR=0;
+int FLAG_PERM=0;
 char *STARTING_POINT;
 
 // q5
@@ -364,7 +365,31 @@ bool lecture(char *nom, char *fichier)
     return false;
 }
 
-void listdir(const char *name, char *valsize, char *valname, char *valdate, char *valmime, char *valctc, char *valdir)
+bool compar_perm(char *valperm, char *fichier){
+    struct stat st;
+    stat(fichier, &st);
+    //get the permission in octal mode of a file
+    mode_t perm = st.st_mode & 0777; // 0777 is the mask to get the permission in octal mode
+    //convert the permission in octal mode to string
+    char *perm_str = malloc(4);
+    sprintf(perm_str, "%o", perm);
+    //printf("perm : %s", perm_str);
+    //compare the permission in octal mode to the one given in argument
+    if (strcmp(perm_str, valperm) == 0){
+        free(perm_str);
+        return true;
+    }
+    free(perm_str);
+    return false;
+}
+
+
+
+
+
+
+
+void listdir(const char *name, char *valsize, char *valname, char *valdate, char *valmime, char *valctc, char *valdir, char* valperm)
 {
     DIR *dirp;         // pointeur de répertoire
     struct dirent *dp; // pointeur de fichier
@@ -427,7 +452,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
             }
             
             // on affiche le nom du répertoire
-            listdir(path, valsize, valname, valdate, valmime, valctc, valdir); // on appelle la fonction récursivement
+            listdir(path, valsize, valname, valdate, valmime, valctc, valdir, valperm); // on appelle la fonction récursivement
         }
         else // si c'est un fichier
         {
@@ -503,6 +528,19 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                         test_ouvalide=1;
                     }
                 }
+
+                if (FLAG_PERM == 1)
+                {
+
+                    if (compar_perm(valperm, temp) == false)
+                    {
+                        test_valide = 0;
+                    }
+                    else{
+                        test_ouvalide=1;
+                    }
+                }
+
                 if (FLAG_CTC == 1)
                 {
 
@@ -523,6 +561,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                         printf("\033[00;32m%s/\033[00;31m%s\033[00m\n", name, dp->d_name); // on affiche le nom du fichier
                     }
                 }
+
 
                 else{
                     if (test_valide == 1 && FLAG_COLOR == 0)
@@ -551,6 +590,7 @@ int main(int argc, char *argv[])
     char *valmime = "ini";
     char *valctc = "ini";
     char *valdir = "ini";
+    char *valperm = "ini";
     int i = 0;
 
     if (argv[2] == '\0')
@@ -661,6 +701,11 @@ int main(int argc, char *argv[])
             {
                 FLAG_COLOR = 1;
             }
+            if (strcmp(argv[i], "-perm") ==0)
+            {
+                FLAG_PERM = 1;
+                valperm = argv[i+1];
+            }
 
             i++;
         }
@@ -678,7 +723,7 @@ int main(int argc, char *argv[])
         {
             STARTING_POINT[strlen(STARTING_POINT) - 1] = '\0';
         }
-        listdir(STARTING_POINT, valsize, valname, valdate, valmime, valctc, valdir);
+        listdir(STARTING_POINT, valsize, valname, valdate, valmime, valctc, valdir,valperm);
     }
     
     return 0;
