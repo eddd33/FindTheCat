@@ -396,14 +396,30 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                     dossier = dossier + 1;
                     if (compar_name(valdir, dossier) == true)
                     {
-                        printf("%s\n", path);
-                        continue;
+                        if (FLAG_COLOR==1){
+                            printf("\033[00;32m%s\n", path);
+                            continue;
+                        }
+                        else{
+                            printf("%s\n", path);
+                            continue;
+                        }
+                        
                     }
                 }
                 else
                 {
-                    printf("%s\n", path);
+                    if (FLAG_COLOR==1){
+                        printf("\033[00;32m%s\n", path);
+                        continue;
+                    }
+                    else{
+                        printf("%s\n", path);
+                        continue;
+                    }
+                    
                 }
+                
             }
             if (FLAG_NOOPTION == 1)
             {
