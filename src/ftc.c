@@ -16,7 +16,9 @@ int FLAG_COLOR=0;
 int FLAG_PERM=0;
 char *STARTING_POINT;
 
-// q5
+// donne si la condition pour -date est remplie
+// nom est le paramètre de -date
+// fichier est le fichier à tester
 bool dernier_acces(char* nom, char* fichier){
     struct stat st;
     stat(fichier, &st);
@@ -58,10 +60,7 @@ bool dernier_acces(char* nom, char* fichier){
         
         tamp[strlen(nom)-2]='\0';
     }
-    // if(nom[0]=='-'){
-    //     printf(stderr, "Erreur: le signe - n'est pas supporté pour le -date\n");
-    //     exit(0);
-    // }
+    
     else
     {
         tamp=strdup(nom);
@@ -122,8 +121,7 @@ bool dernier_acces(char* nom, char* fichier){
     return false;
 }
 
-
-// q3
+// renvoie la taille du fichier
 unsigned long taille(char *fichier)
 {
 
@@ -135,6 +133,9 @@ unsigned long taille(char *fichier)
     return filesize;
 }
 
+// donne si la condition pour -size est remplie
+// nom est le paramètre de -size
+// fichier est le fichier à tester
 bool compar_size(char *nom, char *fichier)
 {
 
@@ -286,6 +287,9 @@ bool compar_size(char *nom, char *fichier)
     return false;
 }
 
+// donne si la condition pour -name est remplie
+// nom est le paramètre de -name
+// fichier est le fichier à tester
 bool compar_name(char *nom, char *fichier)
 {
 
@@ -309,6 +313,9 @@ bool compar_name(char *nom, char *fichier)
     }
 }
 
+// donne si la condition pour -mime est remplie
+// valmime est le paramètre de -mime
+// fichier est le fichier à tester
 bool compar_mime(char *valmime, char *fichier)
 {
     char **extensions = getMegaMimeExtensions(valmime);
@@ -337,9 +344,9 @@ bool compar_mime(char *valmime, char *fichier)
     return false;
 }
 
-//q8
-
-
+// donne si la condition pour -ctc est remplie
+// nom est le paramètre de -ctc
+// fichier est le fichier à tester
 bool lecture(char *nom, char *fichier)
 {
     FILE *f = fopen(fichier, "r");
@@ -348,15 +355,16 @@ bool lecture(char *nom, char *fichier)
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
-    while ((read = getline(&line, &len, f)) != -1)
+    while ((read = getline(&line, &len, f)) != -1) //lit le fichier ligne par ligne
     {
-        if (strstr(line, nom) != NULL)
+        if (strstr(line, nom) != NULL) //si la ligne contient le mot recherché
         {
             free(line);
             fclose(f);
             return true;
         }
-        if (compar_name(nom, line)){
+        if (compar_name(nom, line))//regarde la condition pour le regex
+        { 
             return true;
         }
     }
@@ -364,17 +372,18 @@ bool lecture(char *nom, char *fichier)
     fclose(f);
     return false;
 }
-
+// donne si la condition pour -perm est remplie
+// valperm est le paramètre de -perm
+// fichier est le fichier à tester
 bool compar_perm(char *valperm, char *fichier){
     struct stat st;
     stat(fichier, &st);
-    //get the permission in octal mode of a file
-    mode_t perm = st.st_mode & 0777; // 0777 is the mask to get the permission in octal mode
-    //convert the permission in octal mode to string
+    
+    mode_t perm = st.st_mode & 0777; //mode_t est un type de données qui contient les permissions du fichier
+    //on récupère les permissions du fichier et on les met dans perm
     char *perm_str = malloc(4);
     sprintf(perm_str, "%o", perm);
-    //printf("perm : %s", perm_str);
-    //compare the permission in octal mode to the one given in argument
+    
     if (strcmp(perm_str, valperm) == 0){
         free(perm_str);
         return true;
@@ -386,8 +395,8 @@ bool compar_perm(char *valperm, char *fichier){
 
 
 
-
-
+//listdir est la fonction qui parcourt les fichiers et les répertoires
+//et qui appelle les fonctions de comparaison en fonction des paramètres
 
 void listdir(const char *name, char *valsize, char *valname, char *valdate, char *valmime, char *valctc, char *valdir, char* valperm)
 {
@@ -494,15 +503,10 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
                 if (FLAG_MIME == 1)
                 {
 
-                    // get the last character of a char**
                     char *last = valmime + strlen(valmime) - 1;
 
-                    // boolean test if there is a / in a char**
-
-                    // if the last character is a slash, add a star
                     if (!FLAG_MIMESLASH)
                     {
-                        // if the last character is neither a slash or a star, add slash and star
                         if (*last != '*')
                         {
                             strcat(valmime, "/*");
@@ -579,7 +583,7 @@ void listdir(const char *name, char *valsize, char *valname, char *valdate, char
     closedir(dirp); // on ferme le répertoire
 }
 
-
+// main parse les arguments et lance la fonction listdir
 int main(int argc, char *argv[])
 {
 

@@ -22,6 +22,7 @@ bool compar_size(char *nom, char *fichier);
 bool compar_name(char* nom, char* fichier);
 bool compar_mime(char* valmime, char* fichier);
 bool compar_perm(char *valperm, char *fichier);
+bool lecture(char *nom, char *fichier);
 void listdir(const char *name, char *valsize, char *valname, char *valdate, char* valmime, char* valctc, char* valdir, char* valperm);
 int main(int argc, char *argv[]);
 
